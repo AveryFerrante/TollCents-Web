@@ -45,7 +45,7 @@ namespace TollPriceChecker.Api.Authentication
             using var fileStream = File.OpenRead(filePath);
             var authenticationInformation = await JsonSerializer.DeserializeAsync<List<AuthenticationInformation>>(fileStream);
 
-            return authenticationInformation ?? Enumerable.Empty<AuthenticationInformation>();
+            return authenticationInformation ?? Enumerable.Empty<AuthenticationInformation>(); 
         }
     }
 }
