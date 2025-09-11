@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollPriceChecker.Api", "TollPriceChecker.Api\TollPriceChecker.Api.csproj", "{DD092330-DB9D-4D21-8E36-ED8A5A426C3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollPriceChecker.Core", "TollPriceChecker.Core\TollPriceChecker.Core.csproj", "{FF137E64-9F1F-4868-9E8F-BDE2F7D13F11}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{CA1DC621-B711-4062-8FA0-647CEC027AE5}"
+	ProjectSection(SolutionItems) = preProject
+		CODEOWNERS.txt = CODEOWNERS.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
