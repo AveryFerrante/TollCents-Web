@@ -1,0 +1,6 @@
+@TollCents.Api_HostAddress = http://localhost:5084
+
+GET {{TollCents.Api_HostAddress}}/route-information/
+Accept: application/json
+
+###
