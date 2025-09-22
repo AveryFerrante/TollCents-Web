@@ -1,3 +1,4 @@
+using Serilog;
 using TollCents.Api.Authentication;
 using TollCents.Api.Startup;
 using TollCents.Core;
@@ -14,6 +15,16 @@ namespace TollCents.Api
             builder.Services.ConfigureApplication(builder.Configuration);
             builder.Services.RegisterIntegrations();
             builder.Services.AddControllers();
+            // C:\\Users\\Avery\\Desktop\\WebTest\\test-log.txt
+            builder.Services.AddLogging(b =>
+            {
+                var logger = new LoggerConfiguration()
+                    .MinimumLevel.Information()
+                    .WriteTo.File("/var/www/tollcents/logs/api.log",
+                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+                    .CreateLogger();
+                b.AddSerilog(logger);
+            });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +41,7 @@ namespace TollCents.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseCors(ConfigurationConstants.DevCORSPolicyName);
+                app.UseRateLimiter();
             }
             else
             {

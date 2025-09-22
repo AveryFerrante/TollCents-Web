@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Serilog;
 using System.Threading.RateLimiting;
 using TollCents.Api.Authentication;
 using TollCents.Core.Integrations;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace TollCents.Api.Startup
 {
@@ -54,6 +56,14 @@ namespace TollCents.Api.Startup
                     {
                         rateLimiterOptions.GlobalLimiter = FixedWindowRateLimitingPolicy(rateLimitConfiguration);
                         rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+                        rateLimiterOptions.OnRejected = async (context, _) =>
+                        {
+                            var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                            var logger = loggerFactory.CreateLogger("RateLimiting");
+                            var rateLimitPartitionKey = GetRateLimiterPartitionKey(context.HttpContext);
+                            logger.LogWarning("Rate limit exceeded for partition key: {RateLimitPartitionKey}", rateLimitPartitionKey);
+                            await Task.CompletedTask;
+                        };
                     }); 
             }
             return services;
