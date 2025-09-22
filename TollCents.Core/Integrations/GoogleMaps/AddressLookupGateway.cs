@@ -13,20 +13,21 @@ namespace TollCents.Core.Integrations.GoogleMaps
     public class AddressLookupGateway : IAddressLookupGateway
     {
         private readonly IAutoCompleteApi _autoCompleteApi;
-        private readonly IGoogleMapsIntegrationConfiguration _configuration;
+        private readonly string _apiKey;
 
-        public AddressLookupGateway(IAutoCompleteApi autoCompleteApi, IGoogleMapsIntegrationConfiguration configuration)
+        public AddressLookupGateway(IAutoCompleteApi autoCompleteApi, IIntegrationsConfiguration configuration)
         {
-            ArgumentException.ThrowIfNullOrEmpty(configuration.ApiKey, nameof(configuration.ApiKey));
+            var apiKey = configuration?.Integrations?.GoogleMaps?.ApiKey;
+            ArgumentException.ThrowIfNullOrEmpty(apiKey, nameof(configuration.Integrations.GoogleMaps.ApiKey));
             _autoCompleteApi = autoCompleteApi;
-            _configuration = configuration;
+            _apiKey = apiKey;
         }
 
         public async Task<IEnumerable<PlaceSuggestion>> GetPlaceSuggestionsAsync(string address)
         {
             var request = new PlacesAutoCompleteRequest
             {
-                Key = _configuration.ApiKey!,
+                Key = _apiKey,
                 Input = address,
             };
             var response = await _autoCompleteApi.QueryAsync(request);

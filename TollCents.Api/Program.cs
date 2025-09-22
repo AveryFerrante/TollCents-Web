@@ -1,7 +1,5 @@
-
-using Microsoft.AspNetCore.Authentication;
-using System.Threading.RateLimiting;
 using TollCents.Api.Authentication;
+using TollCents.Api.Startup;
 using TollCents.Core;
 
 namespace TollCents.Api
@@ -13,42 +11,16 @@ namespace TollCents.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.RegisterIntegrations(builder.Configuration);
-            builder.Services.AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>();
-            builder.Services.AddMemoryCache();
-
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: context.Connection?.RemoteIpAddress?.ToString() ?? context.Request.Headers.Host.ToString(),
-                        factory: partition => new FixedWindowRateLimiterOptions
-                        {
-                            AutoReplenishment = true,
-                            PermitLimit = 10,
-                            QueueLimit = 0,
-                            Window = TimeSpan.FromMinutes(10)
-                        }));
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-            });
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigins",
-                    builder => builder.AllowAnyOrigin()
-                                      .AllowAnyMethod()
-                                      .AllowAnyHeader());
-            });
-
+            builder.Services.ConfigureApplication(builder.Configuration);
+            builder.Services.RegisterIntegrations();
             builder.Services.AddControllers();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.OperationFilter<SwaggerAccessCodeOption>();
             });
-            builder.Services.AddAuthentication("AccessCodeScheme")
-                .AddScheme<AuthenticationSchemeOptions, HeaderAuthenticationHandler>("AccessCodeScheme", null);
 
             var app = builder.Build();
 
@@ -57,23 +29,18 @@ namespace TollCents.Api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseCors(ConfigurationConstants.DevCORSPolicyName);
+            }
+            else
+            {
+                app.UseCors(ConfigurationConstants.ProductionCORSPolicyName);
+                app.UseRateLimiter();
             }
 
             app.UseHttpsRedirection();
-
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
-            if (app.Environment.IsDevelopment())
-            {
-                // TODO: Add production CORS policy
-                app.UseCors("AllowAllOrigins");
-            }
-
-            if (!app.Environment.IsDevelopment())
-            {
-                app.UseRateLimiter(); 
-            }
 
             app.MapControllers();
 

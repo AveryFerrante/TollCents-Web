@@ -36,8 +36,9 @@ namespace TollCents.Api.Authentication
         {
             // TODO: Make this work with w/e cloud provider storage solution used. Not local file.
             var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var directory = Path.GetDirectoryName(assemblyLocation) ?? string.Empty;
-            var filePath = Path.Combine(directory, "Authentication\\authenticationInformation.json");
+            var authenticationFileSubDirectory = Path.Combine("Authentication", "authenticationInformation.json");
+            var executionDirectory = Path.GetDirectoryName(assemblyLocation) ?? string.Empty;
+            var filePath = Path.Combine(executionDirectory, authenticationFileSubDirectory);
 
             if (!File.Exists(filePath))
                 return Enumerable.Empty<AuthenticationInformation>();
