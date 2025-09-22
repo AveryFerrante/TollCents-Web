@@ -16,8 +16,8 @@ namespace TollCents.Api.Controllers
             _accessCodeValidationService = accessCodeValidationService;
         }
 
-        [HttpGet("validate")]
-        public async Task<ActionResult<AccessCodeValidity>> ValidateAccessCode([FromQuery] string accessCode)
+        [HttpPost("validate")]
+        public async Task<ActionResult<AccessCodeValidity>> ValidateAccessCode([FromBody] string accessCode)
         {
             var isValid = await _accessCodeValidationService.IsValidAccessCode(accessCode);
             var response = new AccessCodeValidity

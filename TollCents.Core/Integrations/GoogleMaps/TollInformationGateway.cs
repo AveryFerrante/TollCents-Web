@@ -17,19 +17,20 @@ namespace TollCents.Core.Integrations.GoogleMaps
     public class TollInformationGateway : ITollInformationGateway
     {
         private readonly IRoutesDirectionsApi _routesDirectionsApi;
-        private readonly IGoogleMapsIntegrationConfiguration _configuration;
+        private readonly string _apiKey;
 
-        public TollInformationGateway(IRoutesDirectionsApi routesDirectionsApi, IGoogleMapsIntegrationConfiguration configuration)
+        public TollInformationGateway(IRoutesDirectionsApi routesDirectionsApi, IIntegrationsConfiguration configuration)
         {
-            ArgumentException.ThrowIfNullOrEmpty(configuration.ApiKey, nameof(configuration.ApiKey));
+            var apiKey = configuration?.Integrations?.GoogleMaps?.ApiKey;
+            ArgumentException.ThrowIfNullOrEmpty(apiKey, nameof(configuration.Integrations.GoogleMaps.ApiKey));
             _routesDirectionsApi = routesDirectionsApi;
-            _configuration = configuration;
+            _apiKey = apiKey;
         }
 
         public async Task<TollRouteInformation?> GetRouteTollInformationAsync(ByAddressRequest addressRequest)
         {
             var request = RouteBaseRequest
-                .GetRequest(addressRequest, _configuration.ApiKey!)
+                .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
 
             var response = await _routesDirectionsApi.QueryAsync(request);
@@ -40,7 +41,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
         public async Task<TollRouteInformation?> GetRouteTollInformationTXAsync(ByAddressRequest addressRequest)
         {
             var request = RouteBaseRequest
-                .GetRequest(addressRequest, _configuration.ApiKey!)
+                .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
             var response = await _routesDirectionsApi.QueryAsync(request);
             return MapToTollRouteInformation(response);
@@ -49,7 +50,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
         public async Task<RouteInformation?> GetRouteAvoidTollInformationAsync(ByAddressRequest addressRequest)
         {
             var request = RouteBaseRequest
-                .GetRequest(addressRequest, _configuration.ApiKey!)
+                .GetRequest(addressRequest, _apiKey)
                 .AvoidTolls();
 
             var response = await _routesDirectionsApi.QueryAsync(request);
