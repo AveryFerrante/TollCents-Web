@@ -63,6 +63,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 return null;
 
             var route = response.Routes.First();
+            var routeLeg = route.Legs?.FirstOrDefault();
             var distanceInMiles = route.DistanceMeters * 0.000621371 ?? 0;
             var tollPriceUnits = Convert.ToInt32(route.TravelAdvisory?.TollInfo?.EstimatedPrice?.FirstOrDefault()?.Units ?? "0");
             var tollPriceNanos = Convert.ToDouble(route.TravelAdvisory?.TollInfo?.EstimatedPrice?.FirstOrDefault()?.Nanos ?? 0) / 1000000000;
@@ -75,8 +76,17 @@ namespace TollCents.Core.Integrations.GoogleMaps
                     Minutes = route.Duration?.Minutes ?? 0
                 },
                 TollPrice = tollPriceUnits + tollPriceNanos,
-                Description = route.Description
+                Description = route.Description,
+                HasDynamicTolls = RouteUsesTEXpress(routeLeg)
             };
+        }
+
+        private static bool RouteUsesTEXpress(RouteLeg? leg)
+        {
+            return leg?.Steps.Any(step =>
+                (step.NavigationInstruction?.Instructions?.Contains("TEXPRESS", StringComparison.OrdinalIgnoreCase) ?? false) &&
+                (step.NavigationInstruction?.Instructions?.Contains("TOLL ROAD", StringComparison.OrdinalIgnoreCase) ?? false))
+                ?? false;
         }
 
         private RouteInformation? MapToRouteInformation(RoutesDirectionsResponse response)

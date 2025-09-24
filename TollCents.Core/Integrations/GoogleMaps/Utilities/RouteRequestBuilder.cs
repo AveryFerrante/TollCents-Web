@@ -17,7 +17,7 @@ namespace TollCents.Core.Integrations.GoogleMaps.Utilities
     {
         private RoutesDirectionsRequest _request;
         private const string _fieldMaskCommon = "routes.duration,routes.distanceMeters,routes.description";
-        private const string _fieldMaskTollInfo = "routes.travelAdvisory.tollInfo";
+        private const string _fieldMaskTollInfo = "routes.travelAdvisory.tollInfo,routes.legs.steps";
         private RouteBaseRequest(RoutesDirectionsRequest request)
         {
             _request = request;
