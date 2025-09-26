@@ -40,7 +40,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
             var response = await _routesDirectionsApi.QueryAsync(request);
 
-            return await MapToTollRouteInformation(response);
+            return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
         }
 
         public async Task<TollRouteInformation?> GetRouteTollInformationTXAsync(ByAddressRequest addressRequest)
@@ -49,7 +49,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
             var response = await _routesDirectionsApi.QueryAsync(request);
-            return await MapToTollRouteInformation(response);
+            return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
         }
 
         public async Task<RouteInformation?> GetRouteAvoidTollInformationAsync(ByAddressRequest addressRequest)
@@ -62,7 +62,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
             return MapToRouteInformation(response);
         }
-        private async Task<TollRouteInformation?> MapToTollRouteInformation(RoutesDirectionsResponse response)
+        private async Task<TollRouteInformation?> MapToTollRouteInformation(RoutesDirectionsResponse response, bool hasTollPass)
         {
             if (response is null || response.Status != Status.Ok || !response.Routes.Any())
                 return null;
@@ -72,7 +72,9 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var distanceInMiles = route.DistanceMeters * 0.000621371 ?? 0;
             var tollPriceUnits = Convert.ToInt32(route.TravelAdvisory?.TollInfo?.EstimatedPrice?.FirstOrDefault()?.Units ?? "0");
             var tollPriceNanos = Convert.ToDouble(route.TravelAdvisory?.TollInfo?.EstimatedPrice?.FirstOrDefault()?.Nanos ?? 0) / 1000000000;
-            var texpressTolls = await _texpressTollPriceCalculator.GetTEXpressTollPrice(routeLeg?.Steps ?? Enumerable.Empty<RouteLegStep>());
+            var texpressTolls = await _texpressTollPriceCalculator.GetTEXpressTollPrice(
+                routeLeg?.Steps ?? Enumerable.Empty<RouteLegStep>(),
+                hasTollPass);
             return new TollRouteInformation
             {
                 DistanceInMiles = distanceInMiles,

@@ -4,5 +4,6 @@
     {
         public string? TEXpressDataFilePath { get; }
         public double? TollAccessPointMatchToleranceMiles { get; }
+        public double? NoTollTagPriceMultiplier { get; }
     }
 }

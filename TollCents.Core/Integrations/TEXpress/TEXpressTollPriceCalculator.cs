@@ -11,13 +11,14 @@ namespace TollCents.Core.Integrations.TEXpress
 {
     public interface ITEXpressTollPriceCalculator
     {
-        Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps);
+        Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag);
     }
 
     public class TEXpressTollPriceCalculator : ITEXpressTollPriceCalculator
     {
         private readonly string  _dataFilePath;
         private readonly double _tollAccessPointMatchToleranceMiles;
+        private readonly double? _noTollTagPriceMultiplier;
         private readonly IMemoryCache _memoryCache;
 
         public TEXpressTollPriceCalculator(IIntegrationsConfiguration configuration, IMemoryCache memoryCache)
@@ -29,10 +30,11 @@ namespace TollCents.Core.Integrations.TEXpress
 
             _dataFilePath = configuration.Integrations.TEXpressDataFilePath;
             _tollAccessPointMatchToleranceMiles = configuration.Integrations.TollAccessPointMatchToleranceMiles.Value;
+            _noTollTagPriceMultiplier = configuration.Integrations.NoTollTagPriceMultiplier;
             _memoryCache = memoryCache;
         }
 
-        public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps)
+        public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
             var texpressStepsWithIndex = routeSteps
                 .Select((step, index) => new { Step = step, Index = index })
@@ -95,7 +97,7 @@ namespace TollCents.Core.Integrations.TEXpress
 
             return new TEXpressTollPriceResult
             {
-                TotalTollPrice = totalTollPrice,
+                TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * (_noTollTagPriceMultiplier ?? 1)),
                 MatchedAllSegments = matchedAllSegments,
                 HasTollSteps = true
             };

@@ -26,6 +26,8 @@ namespace TollCents.Api.Startup
 
         public double? TollAccessPointMatchToleranceMiles { get; set; }
 
+        public double? NoTollTagPriceMultiplier { get; set; }
+
         IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
     }
 
