@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollCents.Api", "TollCents.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollCents.Core", "TollCents.Core\TollCents.Core.csproj", "{FF137E64-9F1F-4868-9E8F-BDE2F7D13F11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEXpressWebScraper", "TEXpressWebScraper\TEXpressWebScraper.csproj", "{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{FF137E64-9F1F-4868-9E8F-BDE2F7D13F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF137E64-9F1F-4868-9E8F-BDE2F7D13F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF137E64-9F1F-4868-9E8F-BDE2F7D13F11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {062065AF-3F55-4A19-843E-D18695E400A7}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,6 @@
 ﻿using TollCents.Core.Integrations;
 using TollCents.Core.Integrations.GoogleMaps;
+using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.Api.Startup
 {
@@ -8,6 +9,8 @@ namespace TollCents.Api.Startup
     {
         public Integrations? Integrations { get; set; }
         public RateLimiterConfiguration? RateLimiterConfiguration { get; set; }
+
+        public string? TEXpressDataFilePath { get; set; }
 
         // Explicit interface implementations (required for interface contracts)
         IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
@@ -18,6 +21,10 @@ namespace TollCents.Api.Startup
     public class Integrations : IIntegrations
     {
         public GoogleMapsIntegrationConfiguration? GoogleMaps { get; set; }
+
+        public string? TEXpressDataFilePath { get; set; }
+
+        public double? TollAccessPointMatchToleranceMiles { get; set; }
 
         IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
     }
