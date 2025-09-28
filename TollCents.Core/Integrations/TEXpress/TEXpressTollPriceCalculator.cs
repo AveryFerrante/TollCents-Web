@@ -61,7 +61,7 @@ namespace TollCents.Core.Integrations.TEXpress
             double totalTollPrice = 0;
             NumberedTEXpressSteps.ForEach(currentNumberedStep =>
             {
-                if (IsMergingStep(NumberedTEXpressSteps, currentNumberedStep))
+                if (IsTakeRampStep(NumberedTEXpressSteps, currentNumberedStep))
                 {
                     return;
                 }
@@ -119,7 +119,7 @@ namespace TollCents.Core.Integrations.TEXpress
             }) ?? Enumerable.Empty<TEXpressSegment>();
         }
 
-        private bool IsMergingStep(IEnumerable<NumberedRouteStep> steps, NumberedRouteStep currentStep)
+        private bool IsTakeRampStep(IEnumerable<NumberedRouteStep> steps, NumberedRouteStep currentStep)
         {
             // Back to back steps is a good starting indicator of a merging step
             var immediateNextStep = steps.FirstOrDefault(s => s.StepNumber == currentStep.StepNumber + 1);
