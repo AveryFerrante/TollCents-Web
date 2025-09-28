@@ -1,5 +1,4 @@
-﻿using GoogleApi.Entities.Maps.DistanceMatrix.Response;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -16,8 +15,8 @@ namespace TEXpressWebScraper
         {
             { "Loop 12 to Eastbound 635", "277" },
             { "Westbound 635 to Loop 12", "278" },
-            { "35 to Dallas North Tollway", "279" },
-            { "Dallas North Tollway to 35", "280" },
+            // { "35 to Dallas North Tollway", "279" },
+            // { "Dallas North Tollway to 35", "280" },
             //{ "Dallas North Tollway to Greenville", "281" },
             //{ "Greenville to Dallas North Tollway", "282" },
         };

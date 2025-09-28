@@ -1,5 +1,6 @@
 ﻿using GoogleApi.Entities.Maps.Routes.Common;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
+using GoogleApi.Entities.Maps.Routes.Directions.Response.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -36,10 +37,10 @@ namespace TollCents.Core.Integrations.TEXpress
 
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
-            var texpressStepsWithIndex = routeSteps
-                .Select((step, index) => new { Step = step, Index = index })
+            var NumberedTEXpressSteps = routeSteps
+                .Select((step, index) => new NumberedRouteStep { Step = step, StepNumber = index })
                 .Where(a => IsTEXpressTollStep(a.Step)).ToList();
-            if (!texpressStepsWithIndex.Any())
+            if (!NumberedTEXpressSteps.Any())
                 return new TEXpressTollPriceResult
                 {
                     TotalTollPrice = 0,
@@ -58,12 +59,16 @@ namespace TollCents.Core.Integrations.TEXpress
 
             bool matchedAllSegments = true;
             double totalTollPrice = 0;
-            texpressStepsWithIndex.ForEach(texpressStepWithIndex =>
+            NumberedTEXpressSteps.ForEach(currentNumberedStep =>
             {
-                var timeChoices = GetOrderedTEXpressPriceLookupKeys(routeSteps, texpressStepWithIndex.Index);
-                var texpressStep = texpressStepWithIndex.Step;
+                if (IsMergingStep(NumberedTEXpressSteps, currentNumberedStep))
+                {
+                    return;
+                }
 
-                
+                var timeChoices = GetOrderedTEXpressPriceLookupKeys(routeSteps, currentNumberedStep.StepNumber);
+                var texpressStep = currentNumberedStep.Step;
+
                 TEXpressSegment? startSegment = GetStepStartSegment(texpressSegments, texpressStep.StartLocation);
 
                 if (startSegment is null)
@@ -112,6 +117,22 @@ namespace TollCents.Core.Integrations.TEXpress
                 var segments = JsonSerializer.Deserialize<IEnumerable<TEXpressSegment>>(fileContent);
                 return segments ?? Enumerable.Empty<TEXpressSegment>();
             }) ?? Enumerable.Empty<TEXpressSegment>();
+        }
+
+        private bool IsMergingStep(IEnumerable<NumberedRouteStep> steps, NumberedRouteStep currentStep)
+        {
+            // Back to back steps is a good starting indicator of a merging step
+            var immediateNextStep = steps.FirstOrDefault(s => s.StepNumber == currentStep.StepNumber + 1);
+            if (immediateNextStep is null) return false;
+
+            if (currentStep.Step.NavigationInstruction.Maneuver == Maneuver.RampLeft ||
+                currentStep.Step.NavigationInstruction.Maneuver == Maneuver.RampRight)
+            {
+                // TODO: Also check distance? Ramp steps *SHOULD* be short....
+                return true;
+            }
+
+            return false;
         }
 
         private bool EndsInSameSegment(RouteLocation stepEndLocation, TEXpressSegment? startSegment)
@@ -208,5 +229,11 @@ namespace TollCents.Core.Integrations.TEXpress
         public double TotalTollPrice { get; set; }
         public bool MatchedAllSegments { get; set; }
         public bool HasTollSteps { get; set; }
+    }
+
+    public class NumberedRouteStep
+    {
+        public int StepNumber { get; set; }
+        public required RouteLegStep Step { get; set; }
     }
 }
