@@ -31,7 +31,7 @@ namespace TollCents.Api.Controllers
             if (tollResponse is null)
                 return NoContent();
 
-            if (tollResponse.TollPrice > 0)
+            if (tollResponse.GuaranteedTollPrice > 0 || tollResponse.HasDynamicTolls)
             {
                 var avoidTollResponse = await _tollInformationGateway.GetRouteAvoidTollInformationAsync(request);
                 if (avoidTollResponse is null)

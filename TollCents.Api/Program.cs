@@ -12,7 +12,7 @@ namespace TollCents.Api
 
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-            builder.Services.RegisterIntegrations();
+            builder.Services.RegisterGoogleMapsIntegration();
             builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -2,6 +2,9 @@
 {
     public class TollRouteInformation : RouteInformation
     {
-        public double TollPrice { get; set; }
+        public double GuaranteedTollPrice { get; set; }
+        public double EstimatedDynamicTollPrice { get; set; }
+        public bool HasDynamicTolls { get; set; }
+        public bool ProcessedAllDynamicTolls { get; set; }
     }
 }
