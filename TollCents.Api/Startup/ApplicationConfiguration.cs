@@ -10,8 +10,6 @@ namespace TollCents.Api.Startup
         public Integrations? Integrations { get; set; }
         public RateLimiterConfiguration? RateLimiterConfiguration { get; set; }
 
-        public string? TEXpressDataFilePath { get; set; }
-
         // Explicit interface implementations (required for interface contracts)
         IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
         IRateLimiterConfigurationOptions? IRateLimiterConfiguration.RateLimiterConfiguration => RateLimiterConfiguration;
