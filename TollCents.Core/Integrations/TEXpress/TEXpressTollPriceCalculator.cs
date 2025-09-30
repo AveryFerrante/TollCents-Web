@@ -2,6 +2,7 @@
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Entities.Maps.Routes.Directions.Response.Enums;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using TollCents.Core.Integrations.GoogleMaps.Utilities;
@@ -21,8 +22,9 @@ namespace TollCents.Core.Integrations.TEXpress
         private readonly double _tollAccessPointMatchToleranceMiles;
         private readonly double? _noTollTagPriceMultiplier;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<TEXpressTollPriceCalculator> _logger;
 
-        public TEXpressTollPriceCalculator(IIntegrationsConfiguration configuration, IMemoryCache memoryCache)
+        public TEXpressTollPriceCalculator(IIntegrationsConfiguration configuration, IMemoryCache memoryCache, ILogger<TEXpressTollPriceCalculator> logger)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(configuration?.Integrations?.TEXpressDataFilePath, nameof(
                 configuration.Integrations.TEXpressDataFilePath));
@@ -33,6 +35,7 @@ namespace TollCents.Core.Integrations.TEXpress
             _tollAccessPointMatchToleranceMiles = configuration.Integrations.TollAccessPointMatchToleranceMiles.Value;
             _noTollTagPriceMultiplier = configuration.Integrations.NoTollTagPriceMultiplier;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
@@ -57,6 +60,7 @@ namespace TollCents.Core.Integrations.TEXpress
                     HasTollSteps = true
                 };
 
+            _logger.LogInformation("Beginning processesing on {FoundSteps} found TEXpress steps", NumberedTEXpressSteps.Count);
             bool matchedAllSegments = true;
             double totalTollPrice = 0;
             NumberedTEXpressSteps.ForEach(currentNumberedStep =>
@@ -73,6 +77,10 @@ namespace TollCents.Core.Integrations.TEXpress
 
                 if (startSegment is null)
                 {
+                    _logger.LogWarning("Could not find start segment: Step Count {StepCount} | Description {StepDescription} | Start LatLng {StartLatLng}",
+                        currentNumberedStep.StepNumber,
+                        texpressStep.NavigationInstruction.Instructions,
+                        JsonSerializer.Serialize(texpressStep.StartLocation.LatLng));
                     matchedAllSegments = false;
                 }
                 else
@@ -90,6 +98,10 @@ namespace TollCents.Core.Integrations.TEXpress
                 TEXpressSegment? endSegment = GetStepEndSegment(texpressSegments, texpressStep.EndLocation);
                 if (endSegment is null)
                 {
+                    _logger.LogWarning("Could not find end segment: Step Count {StepCount} | Description {StepDescription} | End LatLng {EndLatLng}",
+                        currentNumberedStep.StepNumber,
+                        texpressStep.NavigationInstruction.Instructions,
+                        JsonSerializer.Serialize(texpressStep.EndLocation.LatLng));
                     matchedAllSegments = false;
                 }
                 else
@@ -129,6 +141,9 @@ namespace TollCents.Core.Integrations.TEXpress
                 currentStep.Step.NavigationInstruction.Maneuver == Maneuver.RampRight)
             {
                 // TODO: Also check distance? Ramp steps *SHOULD* be short....
+                _logger.LogInformation("Found IsRamp step for {StepDescription}, Step Number {StepNumber}",
+                    currentStep.Step.NavigationInstruction.Instructions,
+                    currentStep.StepNumber);
                 return true;
             }
 

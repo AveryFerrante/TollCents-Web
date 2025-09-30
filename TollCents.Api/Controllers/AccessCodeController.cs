@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TollCents.Api.Authentication;
 using TollCents.Api.Models;
 
@@ -21,7 +20,7 @@ namespace TollCents.Api.Controllers
         [HttpPost("validate")]
         public async Task<ActionResult<AccessCodeValidity>> ValidateAccessCode([FromBody] string accessCode)
         {
-            _logger.LogInformation("Validating access code.");
+            _logger.LogInformation("Validating access code {AccessCode}", accessCode);
             var isValid = await _accessCodeValidationService.IsValidAccessCode(accessCode);
             var response = new AccessCodeValidity
             {

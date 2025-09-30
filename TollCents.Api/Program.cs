@@ -11,20 +11,14 @@ namespace TollCents.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configure Serilog
+            builder.Host.UseSerilog((context, services, configuration) => configuration
+                .ReadFrom.Configuration(context.Configuration)
+                .ReadFrom.Services(services));
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
             builder.Services.RegisterGoogleMapsIntegration();
             builder.Services.AddControllers();
-            // C:\\Users\\Avery\\Desktop\\WebTest\\test-log.txt
-            builder.Services.AddLogging(b =>
-            {
-                var logger = new LoggerConfiguration()
-                    .MinimumLevel.Information()
-                    .WriteTo.File("/var/www/tollcents/logs/api.log",
-                    outputTemplate: "{Timestamp:HH:mm:ss} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
-                    .CreateLogger();
-                b.AddSerilog(logger);
-            });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -53,6 +47,16 @@ namespace TollCents.Api
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseSerilogRequestLogging(options =>
+            {
+                options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
+                options.GetLevel = (httpContext, elapsed, ex) =>
+                {
+                    if (httpContext.Response.StatusCode >= 400)
+                        return Serilog.Events.LogEventLevel.Warning;
+                    return Serilog.Events.LogEventLevel.Information;
+                };
+            });
 
             app.MapControllers();
 
