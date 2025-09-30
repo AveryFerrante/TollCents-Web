@@ -32,16 +32,9 @@ namespace TEXpressWebScraper
                 .Get<List<TEXpressSegmentWebScraper>>();
 
             var filePath = configuration.GetValue<string>("OutputFilePath");
-            var fileCreationTest = configuration.GetValue<bool>("RunFileCreationTest");
 
             ArgumentNullException.ThrowIfNull(segments);
             ArgumentNullException.ThrowIfNull(filePath);
-
-            if (fileCreationTest)
-            {
-                File.WriteAllText(filePath, "This is a test to see if the file is created and written to");
-                return;
-            }
 
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--headless=new");

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TollCents.Api.Models;
+using TollCents.Api.Startup;
+using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
 
@@ -13,11 +15,41 @@ namespace TollCents.Api.Controllers
     {
         private readonly ILogger<RouteInformationController> _logger;
         private readonly ITollInformationGateway _tollInformationGateway;
+        private readonly IApiRuntimeConfiguration _apiRuntimeConfiguration;
+        private readonly TravelInformation _mockedResult = new TravelInformation
+        {
+            AvoidTollsRouteInformation = new RouteInformation
+            {
+                DistanceInMiles = 14.3,
+                Description = "One road to some other road",
+                DriveTime = new DriveTime
+                {
+                    Hours = 0,
+                    Minutes = 32
+                }
+            },
+            TollRouteInformation = new TollRouteInformation
+            {
+                DistanceInMiles = 15.2,
+                Description = "One toll road to some other road",
+                DriveTime = new DriveTime
+                {
+                    Hours = 0,
+                    Minutes = 22
+                },
+                EstimatedDynamicTollPrice = 3.24,
+                HasDynamicTolls = true,
+                ProcessedAllDynamicTolls = false,
+                GuaranteedTollPrice = 2.00
+            }
+        };
 
-        public RouteInformationController(ILogger<RouteInformationController> logger, ITollInformationGateway tollInformationGateway)
+        public RouteInformationController(ILogger<RouteInformationController> logger, ITollInformationGateway tollInformationGateway,
+            IApiRuntimeConfiguration apiRuntimeConfiguration)
         {
             _logger = logger;
             _tollInformationGateway = tollInformationGateway;
+            _apiRuntimeConfiguration = apiRuntimeConfiguration;
         }
 
         [HttpGet]
@@ -26,6 +58,11 @@ namespace TollCents.Api.Controllers
             [FromQuery] string endAddress,
             [FromQuery] bool hasTollTag)
         {
+            if (_apiRuntimeConfiguration.MockAPIs)
+            {
+                return Ok(_mockedResult);
+            }
+
             var request = new ByAddressRequest { StartAddress = startAddress, EndAddress = endAddress, IncludeTollPass = hasTollTag };
             var tollResponse = await _tollInformationGateway.GetRouteTollInformationTXAsync(request);
             if (tollResponse is null)
