@@ -1,4 +1,5 @@
 ﻿using TollCents.Core.Integrations.GoogleMaps;
+using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.Core.Integrations
 {
@@ -7,7 +8,7 @@ namespace TollCents.Core.Integrations
         public IIntegrations? Integrations { get; }
     }
 
-    public interface IIntegrations
+    public interface IIntegrations : ITEXpressIntegrationConfiguration
     {
         public IGoogleMapsIntegrationConfiguration? GoogleMaps { get; }
     }

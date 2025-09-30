@@ -13,7 +13,7 @@ namespace TollCents.Api
 
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-            builder.Services.RegisterIntegrations();
+            builder.Services.RegisterGoogleMapsIntegration();
             builder.Services.AddControllers();
             // C:\\Users\\Avery\\Desktop\\WebTest\\test-log.txt
             builder.Services.AddLogging(b =>

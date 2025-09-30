@@ -1,13 +1,15 @@
 ﻿using TollCents.Core.Integrations;
 using TollCents.Core.Integrations.GoogleMaps;
+using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.Api.Startup
 {
     // Root configuration class
-    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration
+    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration, IApiRuntimeConfiguration
     {
         public Integrations? Integrations { get; set; }
         public RateLimiterConfiguration? RateLimiterConfiguration { get; set; }
+        public bool MockAPIs { get; set; }
 
         // Explicit interface implementations (required for interface contracts)
         IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
@@ -18,6 +20,12 @@ namespace TollCents.Api.Startup
     public class Integrations : IIntegrations
     {
         public GoogleMapsIntegrationConfiguration? GoogleMaps { get; set; }
+
+        public string? TEXpressDataFilePath { get; set; }
+
+        public double? TollAccessPointMatchToleranceMiles { get; set; }
+
+        public double? NoTollTagPriceMultiplier { get; set; }
 
         IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
     }
@@ -48,5 +56,10 @@ namespace TollCents.Api.Startup
         bool Enabled { get; }
         int PermitLimit { get; }
         int WindowInMinutes { get; }
+    }
+
+    public interface IApiRuntimeConfiguration
+    {
+        public bool MockAPIs { get; }
     }
 }
