@@ -26,7 +26,8 @@ namespace TollCents.Api.Controllers
             }
         };
 
-        public AddressSuggestionsController(IAddressLookupGateway addressLookupGateway, IApiRuntimeConfiguration apiRuntimeConfiguration)
+        public AddressSuggestionsController(IAddressLookupGateway addressLookupGateway,
+            IApiRuntimeConfiguration apiRuntimeConfiguration)
         {
             _addressLookupGateway = addressLookupGateway;
             _apiRuntimeConfiguration = apiRuntimeConfiguration;
@@ -40,6 +41,19 @@ namespace TollCents.Api.Controllers
                 return Ok(_mockedSuggestions);
             }
             var results = await _addressLookupGateway.GetPlaceSuggestionsAsync(queryHint);
+            return Ok(results);
+        }
+
+        [HttpGet("geolocation")]
+        public async Task<ActionResult<PlaceSuggestion>> GetPlaceSuggestionByLatLong([FromQuery] double latitude, [FromQuery] double longitude)
+        {
+            if (_apiRuntimeConfiguration.MockAPIs)
+            {
+                return Ok(_mockedSuggestions.First());
+            }
+            var results = await _addressLookupGateway.GetPlaceSuggestionAsync(latitude, longitude);
+            if (results is null)
+                return NoContent();
             return Ok(results);
         }
     }
