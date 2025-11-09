@@ -1,6 +1,7 @@
 ﻿using GoogleApi.Entities.Common.Enums;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Interfaces.Maps.Routes;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
@@ -20,16 +21,18 @@ namespace TollCents.Core.Integrations.GoogleMaps
     {
         private readonly IRoutesDirectionsApi _routesDirectionsApi;
         private readonly ITEXpressTollPriceCalculator _texpressTollPriceCalculator;
+        private readonly ILogger<TollInformationGateway> _logger;
         private readonly string _apiKey;
 
         public TollInformationGateway(IRoutesDirectionsApi routesDirectionsApi, IIntegrationsConfiguration configuration,
-            ITEXpressTollPriceCalculator texpressTollPriceCalculator)
+            ITEXpressTollPriceCalculator texpressTollPriceCalculator, ILogger<TollInformationGateway> logger)
         {
             var apiKey = configuration?.Integrations?.GoogleMaps?.ApiKey;
             ArgumentException.ThrowIfNullOrEmpty(apiKey, nameof(configuration.Integrations.GoogleMaps.ApiKey));
             _routesDirectionsApi = routesDirectionsApi;
             _texpressTollPriceCalculator = texpressTollPriceCalculator;
             _apiKey = apiKey;
+            _logger = logger;
         }
 
         public async Task<TollRouteInformation?> GetRouteTollInformationAsync(ByAddressRequest addressRequest)
@@ -49,6 +52,8 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
             var response = await _routesDirectionsApi.QueryAsync(request);
+            _logger.LogInformation("Processesing results for route from {StartAddress} to {EndAddress}",
+                addressRequest.StartAddress, addressRequest.EndAddress);
             return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
         }
 
