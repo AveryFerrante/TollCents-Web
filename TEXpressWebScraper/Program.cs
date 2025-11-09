@@ -13,12 +13,17 @@ namespace TEXpressWebScraper
     {
         public static Dictionary<string, string> tollSegmentOptionsSelect = new Dictionary<string, string>()
         {
+            // These are the remaining two to manually map still
             { "Loop 12 to Eastbound 635", "277" },
             { "Westbound 635 to Loop 12", "278" },
-            // { "35 to Dallas North Tollway", "279" },
-            // { "Dallas North Tollway to 35", "280" },
-            //{ "Dallas North Tollway to Greenville", "281" },
-            //{ "Greenville to Dallas North Tollway", "282" },
+        };
+
+        private static Dictionary<string, string> SelectOptionToFileNameMap = new()
+        {
+            { "279", "I35toDNT.txt" },
+            { "281", "DNTtoGreenville.txt" },
+            { "282", "GreenvilletoDNT.txt" },
+            { "280", "DNTtoI35.txt" }
         };
         static void Main(string[] args)
         {
@@ -32,10 +37,37 @@ namespace TEXpressWebScraper
                 .Get<List<TEXpressSegmentWebScraper>>();
 
             var filePath = configuration.GetValue<string>("OutputFilePath");
+            var useSelenium = configuration.GetValue<bool>("UseSelenium");
 
             ArgumentNullException.ThrowIfNull(segments);
             ArgumentNullException.ThrowIfNull(filePath);
 
+            if (useSelenium)
+            {
+                UseSelenium(segments, filePath); 
+            }
+            else
+            {
+                var directoryPath = configuration.GetValue<string>("SourceDataFilesDirectory");
+                ArgumentNullException.ThrowIfNull(directoryPath);
+                segments.ForEach(segment =>
+                {
+                    var fileName = SelectOptionToFileNameMap[segment.TEXpressCrawlerOptionsSelectValue];
+                    var htmlData = File.ReadAllText(Path.Combine(directoryPath, fileName));
+                    var htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(htmlData);
+                    var tableNode = htmlDoc.DocumentNode.SelectSingleNode("//table[@class='table table-timetable']");
+                    var tableBody = tableNode.SelectSingleNode("tbody");
+                    var tableRows = tableBody.SelectNodes("tr");
+                    var timePrices = GetTimePriceDictionary(segment.Description ?? "", tableRows);
+                    segment.TimeOfDayPricing = timePrices;
+                });
+                File.WriteAllText(filePath, JsonSerializer.Serialize(segments.Cast<TEXpressSegment>(), new JsonSerializerOptions { WriteIndented = true }));
+            }
+        }
+
+        private static void UseSelenium(List<TEXpressSegmentWebScraper> segments, string filePath)
+        {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--headless=new");
             options.AddArgument("--no-sandbox");
@@ -52,7 +84,7 @@ namespace TEXpressWebScraper
                     Thread.Sleep(10000);
                 });
                 File.WriteAllText(filePath, JsonSerializer.Serialize(segments.Cast<TEXpressSegment>(), new JsonSerializerOptions { WriteIndented = true }));
-                driver.Quit(); 
+                driver.Quit();
             }
         }
 
@@ -115,7 +147,11 @@ namespace TEXpressWebScraper
 
             var something = doc.DocumentNode.SelectSingleNode("tbody");
             var tableRows = something.SelectNodes("tr");
+            return GetTimePriceDictionary(tollSegment, tableRows);
+        }
 
+        private static Dictionary<string, IEnumerable<TimePrice>> GetTimePriceDictionary(string tollSegment, HtmlNodeCollection tableRows)
+        {
             var dictionay = new Dictionary<string, IEnumerable<TimePrice>>();
 
             try
