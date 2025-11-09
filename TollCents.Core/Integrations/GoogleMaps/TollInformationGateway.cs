@@ -51,7 +51,9 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var request = RouteBaseRequest
                 .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
+
             var response = await _routesDirectionsApi.QueryAsync(request);
+
             _logger.LogInformation("Processesing results for route from {StartAddress} to {EndAddress}",
                 addressRequest.StartAddress, addressRequest.EndAddress);
             return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
@@ -80,6 +82,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var texpressTolls = await _texpressTollPriceCalculator.GetTEXpressTollPrice(
                 routeLeg?.Steps ?? Enumerable.Empty<RouteLegStep>(),
                 hasTollPass);
+
             return new TollRouteInformation
             {
                 DistanceInMiles = distanceInMiles,
