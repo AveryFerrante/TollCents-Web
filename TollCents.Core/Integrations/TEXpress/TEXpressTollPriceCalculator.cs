@@ -40,10 +40,10 @@ namespace TollCents.Core.Integrations.TEXpress
 
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
-            var NumberedTEXpressSteps = routeSteps
+            var numberedTEXpressSteps = routeSteps
                 .Select((step, index) => new NumberedRouteStep { Step = step, StepNumber = index })
                 .Where(a => IsTEXpressTollStep(a.Step)).ToList();
-            if (!NumberedTEXpressSteps.Any())
+            if (!numberedTEXpressSteps.Any())
                 return new TEXpressTollPriceResult
                 {
                     TotalTollPrice = 0,
@@ -60,12 +60,15 @@ namespace TollCents.Core.Integrations.TEXpress
                     HasTollSteps = true
                 };
 
-            _logger.LogInformation("Beginning processesing on {FoundSteps} found TEXpress steps", NumberedTEXpressSteps.Count);
+            _logger.LogInformation("Beginning processesing on {FoundSteps} found TEXpress steps", numberedTEXpressSteps.Count);
             bool matchedAllSegments = true;
             double totalTollPrice = 0;
-            NumberedTEXpressSteps.ForEach(currentNumberedStep =>
+            numberedTEXpressSteps.ForEach(currentNumberedStep =>
             {
-                if (IsTakeRampStep(NumberedTEXpressSteps, currentNumberedStep))
+                _logger.LogInformation("Analyzing TEXpress Step Number {StepNumber} | Description \"{StepDescription}\"",
+                    currentNumberedStep.StepNumber,
+                    currentNumberedStep.Step.NavigationInstruction.Instructions);
+                if (IsTakeRampStep(numberedTEXpressSteps, currentNumberedStep))
                 {
                     return;
                 }
@@ -77,7 +80,7 @@ namespace TollCents.Core.Integrations.TEXpress
 
                 if (startSegment is null)
                 {
-                    _logger.LogWarning("Could not find start segment: Step Count {StepCount} | Description {StepDescription} | Start LatLng {StartLatLng}",
+                    _logger.LogWarning("Could not find start segment: Step Count {StepCount} | Description \"{StepDescription}\" | Start LatLng {StartLatLng}",
                         currentNumberedStep.StepNumber,
                         texpressStep.NavigationInstruction.Instructions,
                         JsonSerializer.Serialize(texpressStep.StartLocation.LatLng));
@@ -85,6 +88,7 @@ namespace TollCents.Core.Integrations.TEXpress
                 }
                 else
                 {
+                    _logger.LogInformation("Matched start segment: {SegmentDescription}", startSegment.Description);
                     double price = GetTollSegmentPrice(timeChoices, startSegment);
                     if (price > 0) totalTollPrice += price;
                     else matchedAllSegments = false;
@@ -92,13 +96,14 @@ namespace TollCents.Core.Integrations.TEXpress
 
                 if (EndsInSameSegment(texpressStep.EndLocation, startSegment))
                 {
+                    _logger.LogInformation("Step ends in same segment as start segment, skipping end segment price check.");
                     return;
                 }
 
                 TEXpressSegment? endSegment = GetStepEndSegment(texpressSegments, texpressStep.EndLocation);
                 if (endSegment is null)
                 {
-                    _logger.LogWarning("Could not find end segment: Step Count {StepCount} | Description {StepDescription} | End LatLng {EndLatLng}",
+                    _logger.LogWarning("Could not find end segment: Step Count {StepCount} | Description \"{StepDescription}\" | End LatLng {EndLatLng}",
                         currentNumberedStep.StepNumber,
                         texpressStep.NavigationInstruction.Instructions,
                         JsonSerializer.Serialize(texpressStep.EndLocation.LatLng));
@@ -106,18 +111,26 @@ namespace TollCents.Core.Integrations.TEXpress
                 }
                 else
                 {
+                    _logger.LogInformation("Matched end segment: {SegmentDescription}", endSegment.Description);
                     var price = GetTollSegmentPrice(timeChoices, endSegment);
                     if (price > 0) totalTollPrice += price;
                     else matchedAllSegments = false;
                 }
             });
 
-            return new TEXpressTollPriceResult
+            var tollResponse = new TEXpressTollPriceResult
             {
                 TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * (_noTollTagPriceMultiplier ?? 1)),
                 MatchedAllSegments = matchedAllSegments,
                 HasTollSteps = true
             };
+
+            _logger.LogInformation("Completed TEXpress toll price calculation. Total Price: {TotalPrice} | Matched All Segments: {MatchedAllSegments} | Has Toll Steps: {HasTollSteps}",
+                tollResponse.TotalTollPrice,
+                tollResponse.MatchedAllSegments,
+                tollResponse.HasTollSteps);
+
+            return tollResponse;
         }
 
         private async Task<IEnumerable<TEXpressSegment>> GetSegmentsAsync()
@@ -141,7 +154,7 @@ namespace TollCents.Core.Integrations.TEXpress
                 currentStep.Step.NavigationInstruction.Maneuver == Maneuver.RampRight)
             {
                 // TODO: Also check distance? Ramp steps *SHOULD* be short....
-                _logger.LogInformation("Found IsRamp step for {StepDescription}, Step Number {StepNumber}",
+                _logger.LogInformation("Found IsRamp step for \"{StepDescription}\", Step Number {StepNumber}",
                     currentStep.Step.NavigationInstruction.Instructions,
                     currentStep.StepNumber);
                 return true;
@@ -187,11 +200,21 @@ namespace TollCents.Core.Integrations.TEXpress
                     .Any(exitPoint => exitPoint.Location.DistanceToInMiles(stepEndLocation) <= _tollAccessPointMatchToleranceMiles));
         }
 
-        private static bool IsTEXpressTollStep(RouteLegStep step)
+        private bool IsTEXpressTollStep(RouteLegStep step)
         {
-            return
+            var isTollStep = (step.NavigationInstruction?.Instructions?.Contains("TOLL ROAD", StringComparison.OrdinalIgnoreCase) ?? false);
+            var isTEXpressStep =
                 (step.NavigationInstruction?.Instructions?.Contains("TEXPRESS", StringComparison.OrdinalIgnoreCase) ?? false) &&
-                (step.NavigationInstruction?.Instructions?.Contains("TOLL ROAD", StringComparison.OrdinalIgnoreCase) ?? false);
+                isTollStep;
+
+            if (isTollStep)
+            {
+                _logger.LogInformation("Found toll step. Description \"{StepDescription}\" | isTEXpressStep: {IsTEXpressStep}",
+                    step.NavigationInstruction?.Instructions,
+                    isTEXpressStep.ToString());
+            }
+
+            return isTEXpressStep;
         }
 
         static TimeSpan GetTollStepArrivalTimeOffset(IEnumerable<RouteLegStep> routeSteps, int tollStepIndex)
