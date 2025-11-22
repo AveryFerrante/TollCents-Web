@@ -1,0 +1,51 @@
+<Project>
+
+  <!-- 
+    General Build Settings
+    Configures the target framework, language features, and basic build behavior.
+  -->
+  <PropertyGroup>
+    <!-- Target .NET 10 -->
+    <TargetFramework>net10.0</TargetFramework>
+    
+    <!-- Use the latest C# language version available -->
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Enable Nullable Reference Types (Critical for modern .NET) -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Enable Implicit Usings to reduce boilerplate -->
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Enable the new Artifacts Output Layout (cleaner bin/obj folders) -->
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+
+  <!-- 
+    Code Analysis & Quality
+    Enforces strict coding standards and warnings.
+  -->
+  <PropertyGroup>
+    <!-- Use the latest analysis level for .NET 10 -->
+    <!-- <AnalysisLevel>latest-all</AnalysisLevel> -->
+    
+    <!-- Enforce code style rules during the build -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    <!-- Treat warnings as errors in Release builds to ensure quality -->
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <!-- 
+    Assembly Information
+    Common metadata for all projects in the solution.
+  -->
+  <PropertyGroup>
+    <Company>TollCents</Company>
+    <Authors>Avery Ferrante</Authors>
+    <Copyright>Copyright © $([System.DateTime]::Now.Year)</Copyright>
+    <!-- Deterministic Builds for reproducible CI/CD artifacts -->
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>
