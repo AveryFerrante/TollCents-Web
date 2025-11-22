@@ -1,0 +1,669 @@
+{
+    "routes": [
+        {
+            "legs": [
+                {
+                    "steps": [
+                        {
+                            "distanceMeters": 26,
+                            "staticDuration": "4s",
+                            "polyline": {
+                                "encodedPolyline": "kkagEnohqQG@a@M"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.7802153,
+                                    "longitude": -97.3696794
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.7804327,
+                                    "longitude": -97.3696154
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "DEPART",
+                                "instructions": "Head north toward NW 21st St"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "85 ft"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 26,
+                            "staticDuration": "10s",
+                            "polyline": {
+                                "encodedPolyline": "ulagEbohqQ[l@"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.7804327,
+                                    "longitude": -97.3696154
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.7805672,
+                                    "longitude": -97.3698489
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Turn left toward NW 21st St"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "85 ft"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 87,
+                            "staticDuration": "47s",
+                            "polyline": {
+                                "encodedPolyline": "qmagEpphqQLHjAtBJL"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.7805672,
+                                    "longitude": -97.3698489
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.7800626,
+                                    "longitude": -97.370558699999989
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Turn left onto NW 21st St"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "285 ft"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 3343,
+                            "staticDuration": "226s",
+                            "polyline": {
+                                "encodedPolyline": "kjagE~thqQLXrAgA`XaQ|BqBzBcC|AyBxEmJf[oo@tAyCBUbE{IzAeC~b@ol@Xg@LORo@JSX]"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.7800626,
+                                    "longitude": -97.370558699999989
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.760088599999996,
+                                    "longitude": -97.3446683
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Turn left onto TX-199 E"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "2.1 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "4 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 858,
+                            "staticDuration": "87s",
+                            "polyline": {
+                                "encodedPolyline": "qm}fEdscqQV?VQN[dAmALa@bDiEtG_J|@_A|@u@lAu@`KcG"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.760088599999996,
+                                    "longitude": -97.3446683
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.754202299999996,
+                                    "longitude": -97.338951999999992
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "ROUNDABOUT_RIGHT",
+                                "instructions": "At the traffic circle, take the 2nd exit onto N Henderson St\nPass by Taco Bell (on the right in 0.5 mi)"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.5 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 2244,
+                            "staticDuration": "235s",
+                            "polyline": {
+                                "encodedPolyline": "wh|fElobqQ{Pad@iJgVUc@gDwEk@sAoBkF]iBq@_EoDqJ_EeK_D{HoC{F"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.754202299999996,
+                                    "longitude": -97.338951999999992
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.7643583,
+                                    "longitude": -97.3183136
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Turn left onto TX-347 Spur E/W Weatherford St\nContinue to follow TX-347 Spur E"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "1.4 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "4 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 11648,
+                            "staticDuration": "401s",
+                            "polyline": {
+                                "encodedPolyline": "gh~fEln~pQmBmEqDaICUi@mAgAgD}@qDk@uCe@oD_@kEM_ECsF@_LK{DWwD]}Cg@eDu@mD_AcDkBiFgr@gkBqAiDa{@y}ByA{EuA_GuFw[wVqxAsAgG}AqFol@}iBuCgJsAqDuAuEaFeQ}@gCi@eAiAgBu@}@}AyAyAgAqBcA_Cw@mFaByCgAkFeC"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.7643583,
+                                    "longitude": -97.3183136
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.8104659,
+                                    "longitude": -97.2092991
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "NAME_CHANGE",
+                                "instructions": "Continue onto State Hwy 121 N"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "7.2 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "7 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 1923,
+                            "staticDuration": "72s",
+                            "polyline": {
+                                "encodedPolyline": "mhggEbeipQmHkDwPcHcC}@cEiA_Ds@}B_@{Gs@gEOaQUaCGaP_@wB?"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.8104659,
+                                    "longitude": -97.2092991
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.8271769,
+                                    "longitude": -97.2052314
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "MERGE",
+                                "instructions": "Merge onto I-820 N/State Hwy 121 N"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "1.2 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 14069,
+                            "staticDuration": "521s",
+                            "polyline": {
+                                "encodedPolyline": "{pjgEtkhpQk@OeCM}C[_Cc@{Bs@cBu@iAs@{AmA{A}AiA}AwAaC_AwBaB{EuAyDk@aA_AmCiAyBi@}@_IkKi@}@u@{A_AgCq@gCi@cDqBcTqAuLs@mHg@_HY}FM}EEiF?kGRqd@Lq]I_JSuHk@ePIyF?}`@JoDR_Db@wDd@iCp@sCtAkEvEwMp@{Bl@eCh@aDZiDNaDDgCByeAH}WAsBMaD[_DeBsNUuCI{C@}|@M_ZCyFBuIDgKFkgAGsEScF]}Em@iFcBeLYiDK}C@uDN_DjGmu@TiFHuCFuUBeJGcCWqDW_Ca@cC"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.8271769,
+                                    "longitude": -97.2052314
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.8374489,
+                                    "longitude": -97.0624648
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_SLIGHT_RIGHT",
+                                "instructions": "Slight right onto State Hwy 121 N/TX-121 N/TX-183 E (signs for D.F.W. Arpt/Dallas)\nContinue to follow TX-183 E"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "8.7 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "9 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 3752,
+                            "staticDuration": "132s",
+                            "polyline": {
+                                "encodedPolyline": "aqlgEjoloQuC_Om@iE_@mEKuCEeEF}DVgE\\sDrFsd@X{DJyDDkKFoiA?{o@?yD"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.8374489,
+                                    "longitude": -97.0624648
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.8368859,
+                                    "longitude": -97.022733899999992
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Keep left to stay on TX-183 E, follow signs for Dallas"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "2.3 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "2 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 4252,
+                            "staticDuration": "151s",
+                            "polyline": {
+                                "encodedPolyline": "qmlgE`wdoQRQJ_DDuELyIEqAOkAa@uAcBgEc@u@q@u@w@m@}@_@gASaAE{i@bDsABYTiJAeEQiCS{Eo@yCk@aEgAkFkBcEoByAy@uGsEiDyCeCmCqBcCui@ws@"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.8368859,
+                                    "longitude": -97.022733899999992
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.8657754,
+                                    "longitude": -97.0026604
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "RAMP_RIGHT",
+                                "instructions": "Take the exit onto State Hwy 161 N/TX-161 N/President George Bush Tpke N"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "2.6 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "3 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 6893,
+                            "staticDuration": "222s",
+                            "polyline": {
+                                "encodedPolyline": "cbrgEry`oQuMeQaDuDwDwDqCcC_v@sl@c_@}YwQsNyDcDuCyCgC{CmC}DmCoE_Qs[_LoSmNaVeKqQaUe`@}PaZuB_EsBsE{B_Ge@sA"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.8657754,
+                                    "longitude": -97.0026604
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.909065999999996,
+                                    "longitude": -96.9509113
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "NAME_CHANGE",
+                                "instructions": "Continue onto President George Bush Tpke N\nToll road"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "4.3 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "4 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 4476,
+                            "staticDuration": "157s",
+                            "polyline": {
+                                "encodedPolyline": "upzgEdvvnQ@g@eAoEeDyOo@}EYgDOiDI_HFmGZqHZqDfEy]Gq@bJap@\\gD^{FPqFBqGa@chAGqGMsZ"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.909065999999996,
+                                    "longitude": -96.9509113
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.907541,
+                                    "longitude": -96.9037743
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "RAMP_RIGHT",
+                                "instructions": "Take the exit onto I-635 E"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "2.8 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "3 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 10305,
+                            "staticDuration": "337s",
+                            "polyline": {
+                                "encodedPolyline": "cgzgEpomnQQYUcJIwOKqCm@qHQyDOgEi@mHe@gF_@}C}@iHyCwWmAkImDqTqFo^}BmReBeM}@kFiFaX}B{M}CyQaAwEoAuEiJkYeCwH}A{EeH{TqCwIaLc^uAsFaAcFq@}E]oD]wEOqE_@a^C{\\DuOBgc@Fa`@EeQF}EV}Fp@eI`@cFh@yHX{GDgFCiF"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.907541,
+                                    "longitude": -96.9037743
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.9249495,
+                                    "longitude": -96.7973739
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_LEFT",
+                                "instructions": "Keep left to continue on Interstate 635 TEXpress, follow signs for I-635 TEXpress\nToll road"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "6.4 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "6 mins"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 683,
+                            "staticDuration": "30s",
+                            "polyline": {
+                                "encodedPolyline": "}s}gEpvxmQJSFmCNwB^qE@aDC{VQ["
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.9249495,
+                                    "longitude": -96.7973739
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.9247097,
+                                    "longitude": -96.7901424
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "RAMP_RIGHT",
+                                "instructions": "Take the exit toward US-75/Coit Rd\nToll road"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.4 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 1080,
+                            "staticDuration": "55s",
+                            "polyline": {
+                                "encodedPolyline": "mr}gEjiwmQDeLNqGtBi`@P{O"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.9247097,
+                                    "longitude": -96.7901424
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.923925,
+                                    "longitude": -96.7786282
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "MERGE",
+                                "instructions": "Merge onto I-635 E"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.7 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 417,
+                            "staticDuration": "23s",
+                            "polyline": {
+                                "encodedPolyline": "om}gElaumQV_@LgF@qG?kE@oBHW"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.923925,
+                                    "longitude": -96.7786282
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.923656,
+                                    "longitude": -96.774236699999989
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "RAMP_RIGHT",
+                                "instructions": "Take exit 19B toward Coit Rd"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.3 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 402,
+                            "staticDuration": "33s",
+                            "polyline": {
+                                "encodedPolyline": "{k}gE~etmQ?oCJcIAkHB}A"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.923656,
+                                    "longitude": -96.774236699999989
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.9235928,
+                                    "longitude": -96.7699289
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "MERGE",
+                                "instructions": "Merge onto Lyndon B Johnson Fwy"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.2 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 721,
+                            "staticDuration": "62s",
+                            "polyline": {
+                                "encodedPolyline": "mk}gE`ksmQS]?g@MKOCsDAMDOf@JfEVnHAXFxG@lI"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.9235928,
+                                    "longitude": -96.7699289
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.9246725,
+                                    "longitude": -96.7754511
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_SHARP_LEFT",
+                                "instructions": "Sharp left onto Interstate 635 Service Rd/Lyndon B Johnson Fwy"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.4 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        },
+                        {
+                            "distanceMeters": 546,
+                            "staticDuration": "57s",
+                            "polyline": {
+                                "encodedPolyline": "er}gEpmtmQqJE}@EiBWcB_@oAa@eCgA_Bs@"
+                            },
+                            "startLocation": {
+                                "latLng": {
+                                    "latitude": 32.9246725,
+                                    "longitude": -96.7754511
+                                }
+                            },
+                            "endLocation": {
+                                "latLng": {
+                                    "latitude": 32.9294112,
+                                    "longitude": -96.7743198
+                                }
+                            },
+                            "navigationInstruction": {
+                                "maneuver": "TURN_RIGHT",
+                                "instructions": "Turn right onto Meandering Way\nDestination will be on the right"
+                            },
+                            "localizedValues": {
+                                "distance": {
+                                    "text": "0.3 mi"
+                                },
+                                "staticDuration": {
+                                    "text": "1 min"
+                                }
+                            },
+                            "travelMode": "DRIVE"
+                        }
+                    ]
+                }
+            ],
+            "distanceMeters": 67751,
+            "duration": "2847s",
+            "description": "TX-183 E",
+            "warnings": [
+                "This route has tolls.",
+                "This route includes a highway."
+            ],
+            "travelAdvisory": {
+                "tollInfo": {
+                    "estimatedPrice": [
+                        {
+                            "currencyCode": "USD",
+                            "nanos": 740000000
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using TollCents.Core.Integrations.TEXpress.Entities;
 
 namespace TollCents.Core
 {
@@ -9,7 +10,7 @@ namespace TollCents.Core
         /// </summary>
         /// <param name="encodedPoints"></param>
         /// <returns></returns>
-        public static IEnumerable<CoordinateEntity> Decode(string encodedPoints)
+        public static IEnumerable<Coordinate> Decode(string encodedPoints)
         {
             if (string.IsNullOrEmpty(encodedPoints))
                 throw new ArgumentNullException("encodedPoints");
@@ -55,7 +56,7 @@ namespace TollCents.Core
 
                 currentLng += (sum & 1) == 1 ? ~(sum >> 1) : (sum >> 1);
 
-                yield return new CoordinateEntity
+                yield return new Coordinate
                 {
                     Latitude = Convert.ToDouble(currentLat) / 1E5,
                     Longitude = Convert.ToDouble(currentLng) / 1E5
@@ -68,7 +69,7 @@ namespace TollCents.Core
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        public static string Encode(IEnumerable<CoordinateEntity> points)
+        public static string Encode(IEnumerable<Coordinate> points)
         {
             var str = new StringBuilder();
 
@@ -107,12 +108,5 @@ namespace TollCents.Core
 
             return str.ToString();
         }
-    }
-
-    public struct CoordinateEntity
-    {
-        public double Latitude;
-        public double Longitude;
-        public CoordinateEntity(double x, double y) { Latitude = x; Longitude = y; }
     }
 }

@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 		Infrastructure\README.txt = Infrastructure\README.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAnalyzer", "DataAnalyzer\DataAnalyzer.csproj", "{B8A3CE79-5236-4048-BDC1-016B314096DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8A3CE79-5236-4048-BDC1-016B314096DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8A3CE79-5236-4048-BDC1-016B314096DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8A3CE79-5236-4048-BDC1-016B314096DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A3CE79-5236-4048-BDC1-016B314096DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
