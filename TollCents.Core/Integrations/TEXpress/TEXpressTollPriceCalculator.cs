@@ -20,20 +20,19 @@ namespace TollCents.Core.Integrations.TEXpress
     {
         private readonly string  _dataFilePath;
         private readonly double _tollAccessPointMatchToleranceMiles;
-        private readonly double? _noTollTagPriceMultiplier;
+        private readonly double _noTollTagPriceMultiplier;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<TEXpressTollPriceCalculator> _logger;
 
         public TEXpressTollPriceCalculator(IIntegrationsConfiguration configuration, IMemoryCache memoryCache, ILogger<TEXpressTollPriceCalculator> logger)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(configuration?.Integrations?.TEXpressDataFilePath, nameof(
-                configuration.Integrations.TEXpressDataFilePath));
-            ArgumentNullException.ThrowIfNull(configuration?.Integrations?.TollAccessPointMatchToleranceMiles, nameof(
-                configuration.Integrations.TollAccessPointMatchToleranceMiles));
+            ArgumentNullException.ThrowIfNull(configuration.Integrations?.TEXpress,
+                nameof(configuration.Integrations.TEXpress));
+            var config = configuration.Integrations.TEXpress;
 
-            _dataFilePath = configuration.Integrations.TEXpressDataFilePath;
-            _tollAccessPointMatchToleranceMiles = configuration.Integrations.TollAccessPointMatchToleranceMiles.Value;
-            _noTollTagPriceMultiplier = configuration.Integrations.NoTollTagPriceMultiplier;
+            _dataFilePath = config.MetadataFilePath;
+            _tollAccessPointMatchToleranceMiles = config.TollAccessPointMatchToleranceMiles;
+            _noTollTagPriceMultiplier = config.NoTollTagPriceMultiplier;
             _memoryCache = memoryCache;
             _logger = logger;
         }
@@ -120,7 +119,7 @@ namespace TollCents.Core.Integrations.TEXpress
 
             var tollResponse = new TEXpressTollPriceResult
             {
-                TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * (_noTollTagPriceMultiplier ?? 1)),
+                TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * (_noTollTagPriceMultiplier)),
                 MatchedAllSegments = matchedAllSegments,
                 HasTollSteps = true
             };

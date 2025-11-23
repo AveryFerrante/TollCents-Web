@@ -21,19 +21,26 @@ namespace TollCents.Api.Startup
     {
         public GoogleMapsIntegrationConfiguration? GoogleMaps { get; set; }
 
-        public string? TEXpressDataFilePath { get; set; }
-
-        public double? TollAccessPointMatchToleranceMiles { get; set; }
-
-        public double? NoTollTagPriceMultiplier { get; set; }
+        public TEXpressIntegrationConfiguration? TEXpress { get; set; }
 
         IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
+
+        ITEXpressIntegrationConfiguration? IIntegrations.TEXpress => TEXpress;
     }
 
     // Google Maps configuration
     public class GoogleMapsIntegrationConfiguration : IGoogleMapsIntegrationConfiguration
     {
         public string? ApiKey { get; set; }
+    }
+
+    public class TEXpressIntegrationConfiguration : ITEXpressIntegrationConfiguration
+    {
+        public required string MetadataFilePath { get; set; }
+
+        public required double TollAccessPointMatchToleranceMiles { get; set; }
+
+        public required double NoTollTagPriceMultiplier { get; set; }
     }
 
     // Rate limiter configuration

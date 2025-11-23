@@ -1,5 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Reflection;
+using TollCents.Api.Models.Attributes;
 
 namespace TollCents.Api.Authentication
 {
@@ -7,8 +9,13 @@ namespace TollCents.Api.Authentication
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            operation.Parameters ??= new List<OpenApiParameter>();
+            var isPublicEndpoint = context.MethodInfo.GetCustomAttribute<PublicEndpointAttribute>();
+            if (isPublicEndpoint != null)
+            {
+                return;
+            }
 
+            operation.Parameters ??= new List<OpenApiParameter>();
             operation.Parameters.Add(new OpenApiParameter
             {
                 Name = "X-Access-Code",

@@ -2,8 +2,8 @@
 {
     public interface ITEXpressIntegrationConfiguration
     {
-        public string? TEXpressDataFilePath { get; }
-        public double? TollAccessPointMatchToleranceMiles { get; }
-        public double? NoTollTagPriceMultiplier { get; }
+        public string MetadataFilePath { get; }
+        public double TollAccessPointMatchToleranceMiles { get; }
+        public double NoTollTagPriceMultiplier { get; }
     }
 }

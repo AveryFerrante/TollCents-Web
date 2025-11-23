@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Serilog;
 using System.Threading.RateLimiting;
 using TollCents.Api.Authentication;
+using TollCents.Api.Models.Attributes;
 using TollCents.Core.Integrations;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace TollCents.Api.Startup
 {
@@ -37,6 +36,7 @@ namespace TollCents.Api.Startup
                         .AllowAnyOrigin()
                         .AllowAnyMethod()
                         .AllowAnyHeader());
+
                 options.AddPolicy(ConfigurationConstants.ProductionCORSPolicyName, builder =>
                     builder
                         .WithOrigins(ConfigurationConstants.AllowedTollCentsDomains)
@@ -57,13 +57,13 @@ namespace TollCents.Api.Startup
                     {
                         rateLimiterOptions.GlobalLimiter = FixedWindowRateLimitingPolicy(rateLimitConfiguration);
                         rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                        rateLimiterOptions.OnRejected = async (context, _) =>
+                        rateLimiterOptions.OnRejected = (context, _) =>
                         {
                             var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
                             var logger = loggerFactory.CreateLogger("RateLimiting");
                             var rateLimitPartitionKey = GetRateLimiterPartitionKey(context.HttpContext);
                             logger.LogWarning("Rate limit exceeded for partition key: {RateLimitPartitionKey}", rateLimitPartitionKey);
-                            await Task.CompletedTask;
+                            return ValueTask.CompletedTask;
                         };
                     }); 
             }
@@ -74,6 +74,12 @@ namespace TollCents.Api.Startup
         {
             return PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
+                bool isPublicEndpoint = context.GetEndpoint()?.Metadata.GetMetadata<PublicEndpointAttribute>() != null;
+                if (isPublicEndpoint)
+                {
+                    return RateLimitPartition.GetNoLimiter("public-endpoint");
+                }
+
                 var partitionKey = GetRateLimiterPartitionKey(context);
                 return RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey,
@@ -89,26 +95,10 @@ namespace TollCents.Api.Startup
 
         private static string GetRateLimiterPartitionKey(HttpContext context)
         {
-            // TODO: Use a custom attribute on the controller and get the resolved controller class to check attribute for "public endpoint"
-            // var endpoint = context.GetEndpoint();
-            // bool isPublicEndpoint = endpoint?.Metadata.GetMetadata<PublicEndpointAttribute>() != null;
-            var path = context.Request.Path.Value;
-
-            bool isPublicEndpoint = path?.Contains("access-code/validate", StringComparison.OrdinalIgnoreCase) == true;
-
-            string partitionKey;
-
-            if (isPublicEndpoint)
-            {
-                partitionKey = context.Connection?.RemoteIpAddress?.ToString() ?? "unknown-ip";
-            }
-            else
-            {
-                var authHeader = context.Request.Headers["X-Access-Code"].ToString();
-                partitionKey = string.IsNullOrWhiteSpace(authHeader) ? "unauthenticated" : authHeader;
-            }
-
-            return partitionKey;
+            // Auth middleware is registered before rate limiting, meaning this should
+            // always exist, else the request would be rejected before reaching here.
+            return context.Request.Headers["X-Access-Code"].ToString()
+                ?? throw new InvalidOperationException("No Access Header Code Found");
         }
     }
 }
