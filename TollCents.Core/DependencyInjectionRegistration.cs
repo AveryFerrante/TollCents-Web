@@ -7,14 +7,23 @@ namespace TollCents.Core
 {
     public static class DependencyInjectionRegistration
     {
-        public static IServiceCollection RegisterGoogleMapsIntegration(this IServiceCollection services)
+        public static IServiceCollection RegisterGoogleMapsIntegration(this IServiceCollection services, bool useMockServices)
         {
-            services.AddScoped<ITollInformationGateway, TollInformationGateway>();
-            services.AddScoped<IAddressLookupGateway, AddressLookupGateway>();
+            
+            if (useMockServices)
+            {
+                services.AddScoped<ITollInformationGateway, TollInformationGatewayMock>();
+                services.AddScoped<IAddressLookupGateway, AddressLookupGatewayMock>();
+            }
+            else
+            {
+                services.AddScoped<ITollInformationGateway, TollInformationGateway>();
+                services.AddScoped<IAddressLookupGateway, AddressLookupGateway>();
+            }
+            
             services.AddGoogleApiClients();
-
             services.AddScoped<ITEXpressTollPriceCalculator, TEXpressTollPriceCalculator>();
-            // TODO: Add memory cache from here?
+            services.AddMemoryCache();
 
             return services;
         }

@@ -2,27 +2,22 @@
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using TollCents.Api.Startup;
 
 namespace TollCents.Api.Authentication
 {
-    public class HeaderAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class HeaderAuthenticationHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder,
+        IAccessCodeValidationService accessCodeValidationService) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
     {
-        private readonly IAccessCodeValidationService _accessCodeValidationService;
-        private readonly ILogger<HeaderAuthenticationHandler> _logger;
-        public HeaderAuthenticationHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            IAccessCodeValidationService accessCodeValidationService)
-            : base(options, logger, encoder)
-        {
-            _logger = logger.CreateLogger<HeaderAuthenticationHandler>();
-            _accessCodeValidationService = accessCodeValidationService;
-        }
+        private readonly IAccessCodeValidationService _accessCodeValidationService = accessCodeValidationService;
+        private readonly ILogger<HeaderAuthenticationHandler> _logger = logger.CreateLogger<HeaderAuthenticationHandler>();
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var headerValue = Request.Headers["X-Access-Code"].FirstOrDefault();
+            var headerValue = Request.Headers[ConfigurationConstants.ApiKeyHeaderName].FirstOrDefault();
             if (await _accessCodeValidationService.IsValidAccessCode(headerValue))
             {
                 _logger.LogInformation("Access code {AccessCode} passed authentication", headerValue);

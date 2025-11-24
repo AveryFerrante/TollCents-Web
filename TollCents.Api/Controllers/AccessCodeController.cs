@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TollCents.Api.Authentication;
 using TollCents.Api.Models;
+using TollCents.Api.Models.Attributes;
 
 namespace TollCents.Api.Controllers
 {
@@ -17,6 +18,7 @@ namespace TollCents.Api.Controllers
             _accessCodeValidationService = accessCodeValidationService;
         }
 
+        [PublicEndpoint]
         [HttpPost("validate")]
         public async Task<ActionResult<AccessCodeValidity>> ValidateAccessCode([FromBody] string accessCode)
         {

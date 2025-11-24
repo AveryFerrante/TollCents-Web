@@ -8,8 +8,9 @@ namespace TollCents.Core.Integrations
         public IIntegrations? Integrations { get; }
     }
 
-    public interface IIntegrations : ITEXpressIntegrationConfiguration
+    public interface IIntegrations
     {
         public IGoogleMapsIntegrationConfiguration? GoogleMaps { get; }
+        public ITEXpressIntegrationConfiguration? TEXpress { get; }
     }
 }

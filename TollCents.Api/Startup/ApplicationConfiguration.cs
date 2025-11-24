@@ -5,11 +5,10 @@ using TollCents.Core.Integrations.TEXpress;
 namespace TollCents.Api.Startup
 {
     // Root configuration class
-    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration, IApiRuntimeConfiguration
+    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration
     {
         public Integrations? Integrations { get; set; }
         public RateLimiterConfiguration? RateLimiterConfiguration { get; set; }
-        public bool MockAPIs { get; set; }
 
         // Explicit interface implementations (required for interface contracts)
         IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
@@ -21,19 +20,26 @@ namespace TollCents.Api.Startup
     {
         public GoogleMapsIntegrationConfiguration? GoogleMaps { get; set; }
 
-        public string? TEXpressDataFilePath { get; set; }
-
-        public double? TollAccessPointMatchToleranceMiles { get; set; }
-
-        public double? NoTollTagPriceMultiplier { get; set; }
+        public TEXpressIntegrationConfiguration? TEXpress { get; set; }
 
         IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
+
+        ITEXpressIntegrationConfiguration? IIntegrations.TEXpress => TEXpress;
     }
 
     // Google Maps configuration
     public class GoogleMapsIntegrationConfiguration : IGoogleMapsIntegrationConfiguration
     {
         public string? ApiKey { get; set; }
+    }
+
+    public class TEXpressIntegrationConfiguration : ITEXpressIntegrationConfiguration
+    {
+        public required string MetadataFilePath { get; set; }
+
+        public required double TollAccessPointMatchToleranceMiles { get; set; }
+
+        public required double NoTollTagPriceMultiplier { get; set; }
     }
 
     // Rate limiter configuration
@@ -56,10 +62,5 @@ namespace TollCents.Api.Startup
         bool Enabled { get; }
         int PermitLimit { get; }
         int WindowInMinutes { get; }
-    }
-
-    public interface IApiRuntimeConfiguration
-    {
-        public bool MockAPIs { get; }
     }
 }

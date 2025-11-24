@@ -1,6 +1,6 @@
 using Serilog;
-using TollCents.Api.Authentication;
 using TollCents.Api.Startup;
+using TollCents.Api.Startup.Swagger;
 using TollCents.Core;
 
 namespace TollCents.Api
@@ -17,16 +17,10 @@ namespace TollCents.Api
                 .ReadFrom.Services(services));
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-            builder.Services.RegisterGoogleMapsIntegration();
+            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration.GetValue<bool>("MockIntegrations"));
             builder.Services.AddControllers();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.OperationFilter<SwaggerAccessCodeOption>();
-            });
-
+            builder.Services.AddSwaggerDefinition();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -35,18 +29,17 @@ namespace TollCents.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
                 app.UseCors(ConfigurationConstants.DevCORSPolicyName);
-                app.UseRateLimiter();
             }
             else
             {
                 app.UseCors(ConfigurationConstants.ProductionCORSPolicyName);
-                app.UseRateLimiter();
             }
 
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseRateLimiter();
             app.UseSerilogRequestLogging(options =>
             {
                 options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
