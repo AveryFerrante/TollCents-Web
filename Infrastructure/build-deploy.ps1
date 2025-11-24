@@ -93,6 +93,7 @@ $RemoteHost = "tollcents.com"
 $RemotePath = "/var/www/tollcents/api"
 $ServiceName = "tollcents"
 $ApiKeyObjectPath = "Integrations.GoogleMaps.ApiKey"
+$ApplicationEntryFile = "TollCents.Api"
 $StartingPWD = $pwd
 
 # STEP 1: Build locally
@@ -127,7 +128,7 @@ ssh "${RemoteUser}@${RemoteHost}" "mkdir -p $RemoteTempDir"
 scp "$WorkingDir\$ZipFileName" "${RemoteUser}@${RemoteHost}:${RemoteTempDir}/"
 
 Write-Host "🚀 Executing atomic deployment on server..."
-$remoteCommands = "cd $RemoteTempDir; tar -xzf $ZipFileName; rm $ZipFileName; rm -rf $RemotePath; cd ..; mv $RemoteTempDir $RemotePath; sudo systemctl restart $ServiceName"
+$remoteCommands = "cd $RemoteTempDir; tar -xzf $ZipFileName; rm $ZipFileName; rm -rf $RemotePath; cd ..; mv $RemoteTempDir $RemotePath; cd $RemotePath; chmod +x $ApplicationEntryFile; sudo systemctl restart $ServiceName"
 ssh "${RemoteUser}@${RemoteHost}" $remoteCommands
 
 
