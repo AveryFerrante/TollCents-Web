@@ -5,11 +5,10 @@ using TollCents.Core.Integrations.TEXpress;
 namespace TollCents.Api.Startup
 {
     // Root configuration class
-    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration, IApiRuntimeConfiguration
+    public class ApplicationConfiguration : IIntegrationsConfiguration, IRateLimiterConfiguration
     {
         public Integrations? Integrations { get; set; }
         public RateLimiterConfiguration? RateLimiterConfiguration { get; set; }
-        public bool MockAPIs { get; set; }
 
         // Explicit interface implementations (required for interface contracts)
         IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
@@ -63,10 +62,5 @@ namespace TollCents.Api.Startup
         bool Enabled { get; }
         int PermitLimit { get; }
         int WindowInMinutes { get; }
-    }
-
-    public interface IApiRuntimeConfiguration
-    {
-        public bool MockAPIs { get; }
     }
 }

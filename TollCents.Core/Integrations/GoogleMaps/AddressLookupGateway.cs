@@ -1,4 +1,5 @@
-﻿using GoogleApi.Entities.Common;
+﻿using GoogleApi.Entities;
+using GoogleApi.Entities.Common;
 using GoogleApi.Entities.Common.Enums;
 using GoogleApi.Entities.Maps.Geocoding.Location.Request;
 using GoogleApi.Entities.Places.AutoComplete.Request;
@@ -39,7 +40,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 Input = address,
             };
             var response = await _autoCompleteApi.QueryAsync(request);
-            if (response is null || response.Status != Status.Ok || !(response.Predictions?.Any() ?? false))
+            if (IsInvalidResponse(response, response.Predictions))
             {
                 return Enumerable.Empty<PlaceSuggestion>();
             }
@@ -62,7 +63,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 }
             };
             var response = await _locationGeocodeApi.QueryAsync(request);
-            if (response is null || response.Status != Status.Ok || !(response.Results?.Any() ?? false))
+            if (IsInvalidResponse(response, response.Results))
             {
                 return null;
             }
@@ -72,5 +73,29 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 Name = addressResult.FormattedAddress
             };
         }
+
+        private static bool IsInvalidResponse<T>(BaseResponse response, IEnumerable<T>? responseItems)
+        {
+            return response is null || response.Status != Status.Ok || !(responseItems?.Any() ?? false);
+        }
+    }
+
+    public class AddressLookupGatewayMock : IAddressLookupGateway
+    {
+        private IEnumerable<PlaceSuggestion> _mockedSuggestions = new List<PlaceSuggestion>()
+        {
+            new PlaceSuggestion
+            {
+                Name = "145 Mock Address Road, Fake City, TX"
+            },
+            new PlaceSuggestion
+            {
+                Name = "187 Cool Street, Faker City, OK"
+            }
+        };
+
+        public Task<IEnumerable<PlaceSuggestion>> GetPlaceSuggestionsAsync(string address) => Task.FromResult(_mockedSuggestions);
+
+        public Task<PlaceSuggestion?> GetPlaceSuggestionAsync(double latitude, double longitude) => Task.FromResult(_mockedSuggestions.FirstOrDefault());
     }
 }

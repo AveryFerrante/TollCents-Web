@@ -1,6 +1,6 @@
 using Serilog;
-using TollCents.Api.Authentication;
 using TollCents.Api.Startup;
+using TollCents.Api.Startup.Swagger;
 using TollCents.Core;
 
 namespace TollCents.Api
@@ -17,17 +17,10 @@ namespace TollCents.Api
                 .ReadFrom.Services(services));
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-            builder.Services.RegisterGoogleMapsIntegration();
+            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration.GetValue<bool>("MockIntegrations"));
             builder.Services.AddControllers();
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            // TODO: Use SecurityScheme/Definition for the required api key header
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.OperationFilter<SwaggerAccessCodeOption>();
-            });
-
+            builder.Services.AddSwaggerDefinition();
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

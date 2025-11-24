@@ -9,5 +9,6 @@
             "tollcents.com",
             "www.tollcents.com"
         ];
+        public static string ApiKeyHeaderName = "X-Access-Code";
     }
 }

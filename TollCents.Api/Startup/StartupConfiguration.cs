@@ -15,9 +15,7 @@ namespace TollCents.Api.Startup
 
             services
                 .AddSingleton<IIntegrationsConfiguration>(applicationConfiguration)
-                .AddSingleton<IApiRuntimeConfiguration>(applicationConfiguration)
-                .AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>()
-                .AddMemoryCache();
+                .AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>();
 
             services.ConfigureCorsPolicies();
             services.ConfigureRateLimiting(applicationConfiguration);
