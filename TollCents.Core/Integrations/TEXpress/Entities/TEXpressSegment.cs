@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TollCents.Core.Entities;
 
 namespace TollCents.Core.Integrations.TEXpress.Entities
 {
@@ -18,11 +19,6 @@ namespace TollCents.Core.Integrations.TEXpress.Entities
     {
         public string? Description { get; set; }
         public Coordinate Location { get; set; }
-    }
-    public struct Coordinate
-    {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
     }
 
     public struct TimePrice

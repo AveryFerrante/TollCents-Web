@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11520.95 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollCents.Api", "TollCents.Api\TollCents.Api.csproj", "{DD092330-DB9D-4D21-8E36-ED8A5A426C3D}"
 EndProject
@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 		Infrastructure\build-deploy.ps1 = Infrastructure\build-deploy.ps1
 		Infrastructure\README.txt = Infrastructure\README.txt
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollCents.ConsolePlayground", "TollCents.ConsolePlayground\TollCents.ConsolePlayground.csproj", "{100A2E82-9C24-4984-9E51-AF3E7D6DFB26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1FC724A-AEB2-4FE9-B8F9-D0740140F2DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100A2E82-9C24-4984-9E51-AF3E7D6DFB26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100A2E82-9C24-4984-9E51-AF3E7D6DFB26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100A2E82-9C24-4984-9E51-AF3E7D6DFB26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100A2E82-9C24-4984-9E51-AF3E7D6DFB26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

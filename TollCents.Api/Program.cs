@@ -17,7 +17,7 @@ namespace TollCents.Api
                 .ReadFrom.Services(services));
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration.GetValue<bool>("MockIntegrations"));
+            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration);
             builder.Services.AddControllers();
             builder.Services.AddSwaggerDefinition();
             

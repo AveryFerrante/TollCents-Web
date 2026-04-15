@@ -1,6 +1,6 @@
 ﻿using GoogleApi.Entities.Maps.Routes.Common;
 using System.Globalization;
-using TollCents.Core.Integrations.TEXpress.Entities;
+using TollCents.Core.Entities;
 
 namespace TollCents.Core.Integrations.TEXpress.Utilities
 {

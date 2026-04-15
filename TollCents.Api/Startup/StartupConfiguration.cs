@@ -13,9 +13,7 @@ namespace TollCents.Api.Startup
             var applicationConfiguration = configuration.Get<ApplicationConfiguration>();
             ArgumentNullException.ThrowIfNull(applicationConfiguration, nameof(applicationConfiguration));
 
-            services
-                .AddSingleton<IIntegrationsConfiguration>(applicationConfiguration)
-                .AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>();
+            services.AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>();
 
             services.ConfigureCorsPolicies();
             services.ConfigureRateLimiting(applicationConfiguration);

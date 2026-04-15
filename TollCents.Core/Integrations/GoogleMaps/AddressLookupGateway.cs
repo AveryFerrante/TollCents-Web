@@ -55,7 +55,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var request = new LocationGeocodeRequest
             {
                 Key = _apiKey,
-                Location = new Coordinate(latitude, longitude),
+                Location = new GoogleApi.Entities.Common.Coordinate(latitude, longitude),
                 ResultTypes = new List<LocationResultType>
                 {
                     LocationResultType.Street_Address,

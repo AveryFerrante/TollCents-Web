@@ -13,4 +13,22 @@ namespace TollCents.Core.Integrations
         public IGoogleMapsIntegrationConfiguration? GoogleMaps { get; }
         public ITEXpressIntegrationConfiguration? TEXpress { get; }
     }
+
+    public class IntegrationsConfiguration : IIntegrationsConfiguration
+    {
+        public Integrations? Integrations { get; set; }
+
+        IIntegrations? IIntegrationsConfiguration.Integrations => Integrations;
+    }
+
+    public class Integrations : IIntegrations
+    {
+        public GoogleMapsIntegrationConfiguration? GoogleMaps { get; set; }
+
+        public TEXpressIntegrationConfiguration? TEXpress { get; set; }
+
+        IGoogleMapsIntegrationConfiguration? IIntegrations.GoogleMaps => GoogleMaps;
+
+        ITEXpressIntegrationConfiguration? IIntegrations.TEXpress => TEXpress;
+    }
 }
