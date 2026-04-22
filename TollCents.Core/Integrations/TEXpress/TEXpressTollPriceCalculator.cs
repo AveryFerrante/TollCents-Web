@@ -37,27 +37,47 @@ namespace TollCents.Core.Integrations.TEXpress
             _logger = logger;
         }
 
+        public async Task<bool> TestTEXpress(IEnumerable<RouteLegStep> routeSteps)
+        {
+            var numberedTEXpressSteps = routeSteps
+                .Select((step, index) => new NumberedRouteStep { Step = step, StepNumber = index })
+                .Where(a => IsTEXpressTollStep(a.Step)).ToList();
+
+            if (!numberedTEXpressSteps.Any())
+            {
+                _logger.LogInformation("No TEXpress steps found in route.");
+                return false;
+            }
+
+            var texpressSegments = await GetSegmentsAsync();
+            return false;
+        }
+
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
             var numberedTEXpressSteps = routeSteps
                 .Select((step, index) => new NumberedRouteStep { Step = step, StepNumber = index })
                 .Where(a => IsTEXpressTollStep(a.Step)).ToList();
             if (!numberedTEXpressSteps.Any())
+            {
                 return new TEXpressTollPriceResult
                 {
                     TotalTollPrice = 0,
                     MatchedAllSegments = true,
                     HasTollSteps = false
                 };
+            }
 
             var texpressSegments = await GetSegmentsAsync();
-            if (!texpressSegments.Any()) 
+            if (!texpressSegments.Any())
+            {
                 return new TEXpressTollPriceResult
                 {
                     TotalTollPrice = 0,
                     MatchedAllSegments = false,
                     HasTollSteps = true
                 };
+            }
 
             _logger.LogInformation("Beginning processesing on {FoundSteps} found TEXpress steps", numberedTEXpressSteps.Count);
             bool matchedAllSegments = true;
@@ -66,7 +86,7 @@ namespace TollCents.Core.Integrations.TEXpress
             {
                 _logger.LogInformation("Analyzing TEXpress Step Number {StepNumber} | Description \"{StepDescription}\"",
                     currentNumberedStep.StepNumber,
-                    currentNumberedStep.Step.NavigationInstruction.Instructions);
+                    currentNumberedStep.Step.NavigationInstruction.Instructions.Replace("\n", " "));
                 if (IsTakeRampStep(numberedTEXpressSteps, currentNumberedStep))
                 {
                     return;
@@ -81,8 +101,15 @@ namespace TollCents.Core.Integrations.TEXpress
                 {
                     _logger.LogWarning("Could not find start segment: Step Count {StepCount} | Description \"{StepDescription}\" | Start LatLng {StartLatLng}",
                         currentNumberedStep.StepNumber,
-                        texpressStep.NavigationInstruction.Instructions,
+                        texpressStep.NavigationInstruction.Instructions.Replace("\n", " "),
                         JsonSerializer.Serialize(texpressStep.StartLocation.LatLng));
+
+                    var nearestSegment = texpressSegments.MinBy(segment => segment.EntryPoints.Min(entryPoint => entryPoint.Location.DistanceToInMiles(texpressStep.StartLocation.ToCoordinate())));
+                    var nearestEntry = nearestSegment?.EntryPoints.MinBy(entryPoint => entryPoint.Location.DistanceToInMiles(texpressStep.StartLocation.ToCoordinate()));
+                    _logger.LogWarning("Nearest entry point segment {Segment} at entry point {Entrypoint} with distance {Distance}",
+                        nearestSegment!.Description,
+                        nearestEntry!.Description,
+                        nearestEntry.Location.DistanceToInMiles(texpressStep.StartLocation.ToCoordinate()));
                     matchedAllSegments = false;
                 }
                 else

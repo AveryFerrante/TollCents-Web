@@ -69,7 +69,7 @@ namespace TEXpressWebScraper
         private static void UseSelenium(List<TEXpressSegmentWebScraper> segments, string filePath)
         {
             ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--headless=new");
+            // options.AddArgument("--headless=new");
             options.AddArgument("--no-sandbox");
             options.AddArgument("--disable-dev-shm-usage");
             using (IWebDriver driver = new ChromeDriver(options))

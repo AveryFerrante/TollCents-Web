@@ -1,7 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.SemanticKernel;
+using Serilog;
+using System.Text.Json;
 using TollCents.Core;
 using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps;
@@ -10,40 +11,40 @@ using TollCents.Core.Integrations.GoogleMaps.Requests;
 ServiceProvider provider = CreateServiceProvider();
 
 var gateway = provider.GetRequiredService<ITollInformationGateway>();
-var ai = provider.GetRequiredService<Kernel>();
 
-var response = await gateway.GetRouteTollInformationTXAsync(new ByAddressRequest
+//var response1 = await gateway.GetRouteTollInformationTXAsync(new ByAddressRequest
+//{
+//    StartAddress = "Dominion at Mercer Crossing, 11771 Mira Lago Blvd, Dallas, TX 75234",
+//    EndAddress = "13312 Meandering Way, Dallas TX",
+//    IncludeTollPass = true
+//});
+//Console.WriteLine(JsonSerializer.Serialize(response1) + "\n\n\n");
+var response2 = await gateway.GetRouteTollInformationTXAsync(new ByAddressRequest
 {
-    StartAddress = "",
-    EndAddress = "",
+    StartAddress = "220 E Las Colinas Blvd",
+    EndAddress = "13312 Meandering Way, Dallas TX",
     IncludeTollPass = true,
-    ViaWaypoints = new List<Coordinate>
-    {
-        // new Coordinate { Latitude = 32.8374489, Longitude = -97.0624648 },
-        // new Coordinate { Latitude = 32.8733542, Longitude = -96.8978273 },
-        new Coordinate { Latitude = 32.9213473, Longitude = -96.8476687 },
-    }
+    //ViaWaypoints = new List<Coordinate>
+    //{
+    //    new Coordinate { Latitude = 32.90759310917281, Longitude = -96.90065177604905 },
+    //    new Coordinate { Latitude = 32.92003620597855, Longitude = -96.85075543321743 }
+    //}
 });
-
-//Console.WriteLine(JsonSerializer.Serialize(response));
+Console.WriteLine(JsonSerializer.Serialize(response2));
 
 
 
 static ServiceProvider CreateServiceProvider()
 {
     IConfiguration configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.Development.json", optional: false)
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("appsettings.Development.json", optional: true)
+        .AddJsonFile($"appsettings.json", optional: false)
         .Build();
 
     var services = new ServiceCollection();
     services.RegisterGoogleMapsIntegration(configuration);
-    services.AddKernel().AddOpenAIChatClient(
-        modelId: "qwen/qwen3.5-9b",
-        apiKey: "lm-studio", // placeholder value, not actually used by LM Studio
-        endpoint: new Uri("http://localhost:1234/v1")
-    );
+    services.AddSerilog(loggerConfiguration => loggerConfiguration.ReadFrom.Configuration(configuration));
 
-    var provider = services.BuildServiceProvider();
-    return provider;
+    return services.BuildServiceProvider();
 }

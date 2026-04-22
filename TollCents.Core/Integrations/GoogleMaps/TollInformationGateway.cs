@@ -2,7 +2,6 @@
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Interfaces.Maps.Routes;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
 using TollCents.Core.Integrations.GoogleMaps.Utilities;
@@ -55,8 +54,6 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var response = await _routesDirectionsApi.QueryAsync(request);
             _logger.LogInformation("Processesing results for route from {StartAddress} to {EndAddress}",
                 addressRequest.StartAddress, addressRequest.EndAddress);
-
-
 
             return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
         }
