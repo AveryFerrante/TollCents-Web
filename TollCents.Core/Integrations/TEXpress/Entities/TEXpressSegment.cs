@@ -5,6 +5,7 @@ namespace TollCents.Core.Integrations.TEXpress.Entities
     public class TEXpressSegment
     {
         public string? Description { get; set; }
+        public CardinalDirection CardinalDirection { get; set; }
         public IEnumerable<TollAccessPoint> EntryPoints { get; set; } = new List<TollAccessPoint>();
         public IEnumerable<TollAccessPoint> ExitPoints { get; set; } = new List<TollAccessPoint>();
         public Dictionary<string, IEnumerable<TimePrice>> TimeOfDayPricing { get; set; } = new Dictionary<string, IEnumerable<TimePrice>>();
