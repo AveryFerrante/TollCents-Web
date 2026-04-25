@@ -39,8 +39,10 @@ var texPressCalculator = provider.GetRequiredService<ITEXpressTollPriceCalculato
 //});
 
 
-var testData = await File.ReadAllTextAsync("C:\\Users\\avery\\Repositories\\" +
-    "TollCents-Web\\TollCents.ConsolePlayground\\RouteFiles\\109_Woodbury_TO_GMF_Fort_Worth_WITHTOLLS.json");
+var config = provider.GetRequiredService<IConfiguration>();
+var testDataFilePath = config.GetValue<string>("TestDataFilePath")
+    ?? throw new Exception("TestDataFilePath not found in configuration.");
+var testData = await File.ReadAllTextAsync(testDataFilePath);
 
 var obj = JsonSerializer.Deserialize<RoutesDirectionsResponse>(testData, new JsonSerializerOptions()
 {
@@ -101,6 +103,7 @@ static ServiceProvider CreateServiceProvider()
         .Build();
 
     var services = new ServiceCollection();
+    services.AddSingleton(configuration);
     services.RegisterGoogleMapsIntegration(configuration);
     services.AddSerilog(loggerConfiguration => loggerConfiguration.ReadFrom.Configuration(configuration));
 
