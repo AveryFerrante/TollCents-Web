@@ -31,7 +31,7 @@ namespace TollCents.ConsolePlayground
                 var executor = _commandExecutors.FirstOrDefault(c =>
                     c.CommandExecutorDiscriminator == (CommandExecutorDiscriminator)selectionIndex);
                 ArgumentNullException.ThrowIfNull(executor, $"No command executor found for selection index {selectionIndex}");
-                await executor.ExecuteCommandAsync(); 
+                await executor.ExecuteCommandAsync();
             }
         }
     }
@@ -92,7 +92,7 @@ namespace TollCents.ConsolePlayground
         private const string _directoryPath = @"C:\Users\avery\Repositories\TollCents-Web\TollCents.ConsolePlayground\RouteFiles";
 
         private IEnumerable<string>? _filePaths { get; set; }
-        
+
         private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions()
         {
             PropertyNameCaseInsensitive = true,
@@ -169,6 +169,7 @@ namespace TollCents.ConsolePlayground
                     _ioSystem.WriteLine(JsonSerializer.Serialize(directionsData, new JsonSerializerOptions { WriteIndented = true }));
                     break;
                 case 1:
+                    _ioSystem.ClearScreen();
                     _ioSystem.WriteLine("Calculating tolls for the route...");
                     var routeSteps = directionsData.Routes.First().Legs.First().Steps;
                     await _texpressCalculator.GetTEXpressTollPrice(routeSteps, hasTollTag: true);
@@ -180,31 +181,37 @@ namespace TollCents.ConsolePlayground
         }
     }
 
-        // I/O System
-        public interface IInputOutputSystem
+    // I/O System
+    public interface IInputOutputSystem
+    {
+        void Write(string message);
+
+        void WriteLine(string message);
+
+        string? GetUserInput();
+        void ClearScreen();
+    }
+
+    public class ConsoleIOSystem : IInputOutputSystem
+    {
+        public string? GetUserInput()
         {
-            void Write(string message);
-
-            void WriteLine(string message);
-
-            string? GetUserInput();
+            return Console.ReadLine();
         }
 
-        public class ConsoleIOSystem : IInputOutputSystem
+        public void Write(string message)
         {
-            public string? GetUserInput()
-            {
-                return Console.ReadLine();
-            }
+            Console.Write(message);
+        }
 
-            public void Write(string message)
-            {
-                Console.Write(message);
-            }
+        public void WriteLine(string message)
+        {
+            Console.WriteLine(message);
+        }
 
-            public void WriteLine(string message)
-            {
-                Console.WriteLine(message);
-            }
+        public void ClearScreen()
+        {
+            Console.Clear();
         }
     }
+}

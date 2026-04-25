@@ -46,38 +46,41 @@ namespace TollCents.Core
             return GetDistanceToInMeters(start, end).ToMiles();
         }
 
-        public static CardinalDirection GetCardinalDirection(this Coordinate start, Coordinate end)
+        public static IEnumerable<CardinalDirection> GetCardinalDirection(this Coordinate start, Coordinate end)
         {
             const double percentageOfDistanceRequired = 0.25;
             double distanceRequired = start.GetDistanceToInMiles(end) * percentageOfDistanceRequired;
             var latBearing = start.GetLatitudinalBearing(end, distanceRequired);
             var longBearing = start.GetLongitudinalBearing(end, distanceRequired);
             ThrowIfBothNull(latBearing, longBearing);
-            switch (latBearing)
-            {
-                case null:
-                    return longBearing.Value;
-                case CardinalDirection.North:
-                    switch (longBearing)
-                    {
-                        case null:
-                            return latBearing.Value;
-                        case CardinalDirection.East:
-                            return CardinalDirection.NorthEast;
-                        default:
-                            return CardinalDirection.NorthWest;
-                    }
-                default:
-                    switch (longBearing)
-                    {
-                        case null:
-                            return latBearing.Value;
-                        case CardinalDirection.East:
-                            return CardinalDirection.SouthEast;
-                        default:
-                            return CardinalDirection.SouthWest;
-                    }
-            }
+
+            return new[] { latBearing, longBearing }.Where(b => b.HasValue).Select(b => b!.Value);
+
+            //switch (latBearing)
+            //{
+            //    case null:
+            //        return longBearing!.Value;
+            //    case CardinalDirection.North:
+            //        switch (longBearing)
+            //        {
+            //            case null:
+            //                return latBearing.Value;
+            //            case CardinalDirection.East:
+            //                return CardinalDirection.NorthEast;
+            //            default:
+            //                return CardinalDirection.NorthWest;
+            //        }
+            //    default:
+            //        switch (longBearing)
+            //        {
+            //            case null:
+            //                return latBearing.Value;
+            //            case CardinalDirection.East:
+            //                return CardinalDirection.SouthEast;
+            //            default:
+            //                return CardinalDirection.SouthWest;
+            //        }
+            //}
         }
 
         private static void ThrowIfBothNull(CardinalDirection? latBearing, CardinalDirection? longBearing)
