@@ -46,7 +46,7 @@ namespace TollCents.Core
             return GetDistanceToInMeters(start, end).ToMiles();
         }
 
-        public static IEnumerable<CardinalDirection> GetCardinalDirection(this Coordinate start, Coordinate end)
+        public static IEnumerable<CardinalDirection> GetCardinalDirections(this Coordinate start, Coordinate end)
         {
             const double percentageOfDistanceRequired = 0.25;
             double distanceRequired = start.GetDistanceToInMiles(end) * percentageOfDistanceRequired;

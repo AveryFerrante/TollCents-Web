@@ -10,18 +10,31 @@ using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.ConsolePlayground
 {
-    public class ConsoleCommandService(
-        ILogger<ConsoleCommandService> _logger,
-        IInputOutputSystem _ioSystem,
-        IEnumerable<ICommandExecutor> _commandExecutors,
-        ITollInformationGateway _tollInfoGateway) : CommandReaderBase(_ioSystem)
+    public class ConsoleCommandService : CommandReaderBase
     {
+        private readonly ILogger<ConsoleCommandService> _logger;
+        private readonly IEnumerable<ICommandExecutor> _commandExecutors;
+        private readonly ITollInformationGateway _tollInfoGateway;
+
+        public ConsoleCommandService(
+            ILogger<ConsoleCommandService> logger,
+            IInputOutputSystem ioSystem,
+            IEnumerable<ICommandExecutor> commandExecutors,
+            ITollInformationGateway tollInfoGateway) : base(ioSystem)
+        {
+            _logger = logger;
+            _commandExecutors = commandExecutors;
+            _tollInfoGateway = tollInfoGateway;
+        }
+
         private readonly IEnumerable<string> _mainOptions = new List<string>
         {
             "Load existing route data from file.",
             "Manually enter route addresses.",
             "Coordinate lookup tool."
         };
+
+
         public async Task CommandLoop()
         {
             while (true)
@@ -36,8 +49,15 @@ namespace TollCents.ConsolePlayground
         }
     }
 
-    public abstract class CommandReaderBase(IInputOutputSystem _ioSystem)
+    public abstract class CommandReaderBase
     {
+        protected readonly IInputOutputSystem _ioSystem;
+
+        protected CommandReaderBase(IInputOutputSystem ioSystem)
+        {
+            _ioSystem = ioSystem;
+        }
+
         protected int GetUserSelectionIndex(IEnumerable<string> options)
         {
             for (int i = 0; i < options.Count(); i++)

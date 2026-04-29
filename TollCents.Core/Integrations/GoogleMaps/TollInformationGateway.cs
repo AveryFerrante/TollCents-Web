@@ -84,18 +84,18 @@ namespace TollCents.Core.Integrations.GoogleMaps
                 routeLeg?.Steps ?? Enumerable.Empty<RouteLegStep>(),
                 hasTollPass);
 
-            if (texpressTolls.SkipWaypoints.Any())
-            {
-                _logger.LogInformation("\n\n\nSkip waypoint(s) detected. Analyzing route with skip waypoints");
-                var route2 = await GetRouteTollInformationTXAsync(new ByAddressRequest
-                {
-                    StartAddress = "109 E Woodbury Drive, Garland TX",
-                    EndAddress = "220 E Las Colinas Blvd, Irving TX",
-                    IncludeTollPass = true,
-                    ViaWaypoints = texpressTolls.SkipWaypoints
+            //if (texpressTolls.SkipWaypoints.Any())
+            //{
+            //    _logger.LogInformation("\n\n\nSkip waypoint(s) detected. Analyzing route with skip waypoints");
+            //    var route2 = await GetRouteTollInformationTXAsync(new ByAddressRequest
+            //    {
+            //        StartAddress = "109 E Woodbury Drive, Garland TX",
+            //        EndAddress = "220 E Las Colinas Blvd, Irving TX",
+            //        IncludeTollPass = true,
+            //        ViaWaypoints = texpressTolls.SkipWaypoints
 
-                });
-            }
+            //    });
+            //}
 
             return new TollRouteInformation
             {

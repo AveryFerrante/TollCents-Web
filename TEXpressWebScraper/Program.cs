@@ -5,21 +5,17 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TollCents.Core.Integrations.TEXpress.Entities;
 
 namespace TEXpressWebScraper
 {
     internal class Program
     {
-        public static Dictionary<string, string> tollSegmentOptionsSelect = new Dictionary<string, string>()
-        {
-            // These are the remaining two to manually map still
-            { "Loop 12 to Eastbound 635", "277" },
-            { "Westbound 635 to Loop 12", "278" },
-        };
-
         private static Dictionary<string, string> SelectOptionToFileNameMap = new()
         {
+            { "277", "Loop12I35toEast635.txt" },
+            { "278", "East635toLoop12I35.txt"  },
             { "279", "I35toDNT.txt" },
             { "281", "DNTtoGreenville.txt" },
             { "282", "GreenvilletoDNT.txt" },
@@ -44,7 +40,9 @@ namespace TEXpressWebScraper
 
             if (useSelenium)
             {
-                UseSelenium(segments, filePath); 
+                var outputSourceFiles = configuration.GetValue<bool>("OutputSourceHTMLFiles");
+                var outputDirectory = configuration.GetValue<string>("SourceDataFilesDirectory");
+                UseSelenium(segments, filePath, outputSourceFiles, outputDirectory); 
             }
             else
             {
@@ -66,7 +64,8 @@ namespace TEXpressWebScraper
             }
         }
 
-        private static void UseSelenium(List<TEXpressSegmentWebScraper> segments, string filePath)
+        private static void UseSelenium(List<TEXpressSegmentWebScraper> segments, string filePath,
+            bool outputSourceFiles, string sourceFilesDirectory)
         {
             ChromeOptions options = new ChromeOptions();
             // options.AddArgument("--headless=new");
@@ -74,16 +73,28 @@ namespace TEXpressWebScraper
             options.AddArgument("--disable-dev-shm-usage");
             using (IWebDriver driver = new ChromeDriver(options))
             {
-                driver.Navigate().GoToUrl("https://www.texpresslanes.com/pricing/calculator/");
                 Thread.Sleep(5000);
                 segments.ForEach(segment =>
                 {
+                    driver.Navigate().GoToUrl("https://www.texpresslanes.com/pricing/calculator/");
                     var result = RunSeleniumNew(driver, segment.TEXpressCrawlerOptionsSelectValue);
+
+                    if (outputSourceFiles)
+                    {
+                        var fileName = SelectOptionToFileNameMap[segment.TEXpressCrawlerOptionsSelectValue];
+                        var filePathForSource = Path.Combine(sourceFilesDirectory, fileName);
+                        File.WriteAllText(filePathForSource, result);
+                    }
+
                     var timePrices = ParseTimePrice(result, segment.Description ?? "");
                     segment.TimeOfDayPricing = timePrices;
                     Thread.Sleep(10000);
                 });
-                File.WriteAllText(filePath, JsonSerializer.Serialize(segments.Cast<TEXpressSegment>(), new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(filePath, JsonSerializer.Serialize(segments.Cast<TEXpressSegment>(), new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Converters = { new JsonStringEnumConverter() }
+                }));
                 driver.Quit();
             }
         }
@@ -91,17 +102,20 @@ namespace TEXpressWebScraper
         public static string RunSeleniumNew(IWebDriver driver, string segmentValue)
         {
             IWebElement dropdownElement = driver.FindElement(By.Name("tollsegment"));
+            driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", dropdownElement);
             var selectElement = new SelectElement(dropdownElement);
             selectElement.SelectByValue(segmentValue);
             Thread.Sleep(4000);
 
             dropdownElement = driver.FindElement(By.Name("day"));
+            driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", dropdownElement);
             selectElement = new SelectElement(dropdownElement);
             selectElement.SelectByValue("monday");
             Thread.Sleep(5000);
 
 
             dropdownElement = driver.FindElement(By.Name("time-hour"));
+            driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", dropdownElement);
             selectElement = new SelectElement(dropdownElement);
             selectElement.SelectByValue("07:00:00");
             Thread.Sleep(3500);
@@ -118,6 +132,16 @@ namespace TEXpressWebScraper
             submitButton.Click();
             Thread.Sleep(7500);
 
+            try
+            {
+                var header = driver.FindElement(By.CssSelector("header.dallas")); // dots replace spaces in class names
+                if (header is not null)
+                {
+                    driver.ExecuteJavaScript("arguments[0].remove();", header);
+                }
+            }
+            catch (Exception) { }
+
             var viewCompleteTableButton = driver.FindElement(By.LinkText("View complete table"));
             driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", viewCompleteTableButton);
             viewCompleteTableButton.Click();
@@ -126,10 +150,10 @@ namespace TEXpressWebScraper
             var table = driver.FindElement(By.XPath("//table[@class='table table-timetable']"));
             var raw = table.GetAttribute("innerHTML");
 
-            Thread.Sleep(2000);
-            var getNewPriceButton = driver.FindElement(By.XPath("//button[text()='Get new average price']"));
-            driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", getNewPriceButton);
-            getNewPriceButton.Click();
+            //Thread.Sleep(2000);
+            //var getNewPriceButton = driver.FindElement(By.XPath("//button[text()='Get new average price']"));
+            //driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", getNewPriceButton);
+            //getNewPriceButton.Click();
 
             return raw ?? "";
         }

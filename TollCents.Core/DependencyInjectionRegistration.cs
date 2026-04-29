@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TollCents.Core.Integrations;
 using TollCents.Core.Integrations.GoogleMaps;
 using TollCents.Core.Integrations.TEXpress;
+using TollCents.Core.Integrations.TEXpress.Services;
 
 namespace TollCents.Core
 {
@@ -24,9 +25,10 @@ namespace TollCents.Core
                 services.AddScoped<IAddressLookupGateway, AddressLookupGateway>();
             }
 
-            services.AddSingleton(integrationsConfig);
+            services.AddSingleton(integrationsConfig); // TODO: Use IOptions system. Update config to use POCO not interface
             services.AddGoogleApiClients();
             services.AddScoped<ITEXpressTollPriceCalculator, TEXpressTollPriceCalculator>();
+            services.AddScoped<ITEXpressSegmentSkipAnomolies, TEXpressSegmentSkipAnomolies>();
             services.AddMemoryCache();
 
             return services;
