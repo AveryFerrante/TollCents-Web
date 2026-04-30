@@ -4,8 +4,14 @@ using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OpenTelemetry;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
+using System.Diagnostics;
 using System.Text.Json;
 using TollCents.ConsolePlayground;
 using TollCents.Core;
@@ -20,9 +26,11 @@ using TollCents.Core.Integrations.TEXpress;
  * "Boosted" log levels? Enabling debug I guess
  * The "point" mapper tool
  */
-ServiceProvider provider = CreateServiceProvider();
+
 //await provider.GetRequiredService<ConsoleCommandService>().CommandLoop();
 
+ServiceProvider provider = CreateServiceProvider();
+// var _ = provider.GetRequiredService<TracerProvider>(); // Ensure the tracer provider is created and initialized
 var gateway = provider.GetRequiredService<ITollInformationGateway>();
 var texPressCalculator = provider.GetRequiredService<ITEXpressTollPriceCalculator>();
 
@@ -135,8 +143,6 @@ if (entries is not null && entries.Value.Any())
 //});
 //Console.WriteLine(JsonSerializer.Serialize(response2));
 
-
-
 static ServiceProvider CreateServiceProvider()
 {
     IConfiguration configuration = new ConfigurationBuilder()
@@ -146,9 +152,27 @@ static ServiceProvider CreateServiceProvider()
         .Build();
 
     var services = new ServiceCollection();
+    //services.AddLogging(loggingBuilder =>
+    //{
+    //    // Configure OTel logging - can be configured via appsettings in the Logging property somehow.
+    //    loggingBuilder.AddOpenTelemetry(options => options.AddConsoleExporter());
+
+    //    // Configure Serilog logging
+    //    loggingBuilder.AddSerilog();
+    //});
+
+    //services.AddOpenTelemetry()
+    //    .ConfigureResource(resource => resource.AddService("TollCents.AnalysisEngine"))
+    //    .WithTracing(tracing => tracing
+    //        .AddSource("b")
+    //        .AddConsoleExporter());
+
     services.AddSingleton(configuration);
     services.Configure<List<RouteAnalysisEntry>>(configuration.GetSection("RouteAnalysis:Addresses"));
-    services.RegisterGoogleMapsIntegration(configuration);
+    var googleMapsConfigSection = $"Integrations:{GoogleMapsIntegrationConfiguration.SectionName}";
+    var texPressConfigSection = $"Integrations:{TEXpressIntegrationConfiguration.SectionName}";
+    services.RegisterGoogleMapsIntegration(configuration.GetSection(googleMapsConfigSection));
+    services.RegisterTEXpressTollCalculatorIntegration(configuration.GetSection(texPressConfigSection));
     services.AddSerilog(loggerConfiguration => loggerConfiguration.ReadFrom.Configuration(configuration));
 
     // Command Orchestration

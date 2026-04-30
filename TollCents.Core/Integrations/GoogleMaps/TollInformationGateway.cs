@@ -3,6 +3,7 @@ using GoogleApi.Entities.Maps.Directions.Response;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Interfaces.Maps.Routes;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
 using TollCents.Core.Integrations.GoogleMaps.Utilities;
@@ -24,14 +25,15 @@ namespace TollCents.Core.Integrations.GoogleMaps
         private readonly ILogger<TollInformationGateway> _logger;
         private readonly string _apiKey;
 
-        public TollInformationGateway(IRoutesDirectionsApi routesDirectionsApi, IIntegrationsConfiguration configuration,
-            ITEXpressTollPriceCalculator texpressTollPriceCalculator, ILogger<TollInformationGateway> logger)
+        public TollInformationGateway(IRoutesDirectionsApi routesDirectionsApi,
+            IOptions<GoogleMapsIntegrationConfiguration> configuration,
+            ITEXpressTollPriceCalculator texpressTollPriceCalculator,
+            ILogger<TollInformationGateway> logger)
         {
-            var apiKey = configuration?.Integrations?.GoogleMaps?.ApiKey;
-            ArgumentException.ThrowIfNullOrEmpty(apiKey, nameof(configuration.Integrations.GoogleMaps.ApiKey));
+            ArgumentNullException.ThrowIfNull(configuration?.Value, nameof(configuration));
             _routesDirectionsApi = routesDirectionsApi;
             _texpressTollPriceCalculator = texpressTollPriceCalculator;
-            _apiKey = apiKey;
+            _apiKey = configuration.Value.ApiKey;
             _logger = logger;
         }
 

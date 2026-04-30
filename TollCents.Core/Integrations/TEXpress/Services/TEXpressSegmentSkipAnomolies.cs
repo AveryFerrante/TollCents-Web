@@ -1,4 +1,5 @@
-﻿using TollCents.Core.Entities;
+﻿using Microsoft.Extensions.Options;
+using TollCents.Core.Entities;
 using TollCents.Core.Integrations.TEXpress.Utilities;
 
 namespace TollCents.Core.Integrations.TEXpress.Services
@@ -11,12 +12,10 @@ namespace TollCents.Core.Integrations.TEXpress.Services
     public class TEXpressSegmentSkipAnomolies : ITEXpressSegmentSkipAnomolies
     {
         private readonly double _tollAccessPointMatchToleranceMiles;
-        public TEXpressSegmentSkipAnomolies(IIntegrationsConfiguration configuration)
+        public TEXpressSegmentSkipAnomolies(IOptions<TEXpressIntegrationConfiguration> configuration)
         {
-            ArgumentNullException.ThrowIfNull(configuration.Integrations?.TEXpress,
-                nameof(configuration.Integrations.TEXpress));
-            var config = configuration.Integrations.TEXpress;
-            _tollAccessPointMatchToleranceMiles = config.TollAccessPointMatchToleranceMiles;
+            ArgumentNullException.ThrowIfNull(configuration?.Value, nameof(configuration));
+            _tollAccessPointMatchToleranceMiles = configuration.Value.TollAccessPointMatchToleranceMiles;
         }
 
         public bool ShouldSkipSegmentAnalysis(IEnumerable<NumberedTollRouteStep> routeSteps, int currentStepIndex)

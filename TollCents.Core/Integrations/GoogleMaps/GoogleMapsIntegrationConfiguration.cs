@@ -1,16 +1,14 @@
-﻿namespace TollCents.Core.Integrations.GoogleMaps
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TollCents.Core.Integrations.GoogleMaps
 {
-    public interface IGoogleMapsIntegrationConfiguration
+    public class GoogleMapsIntegrationConfiguration
     {
-        string ApiKey { get; }
+        public const string SectionName = "GoogleMaps";
 
-        bool UseMockServices { get; }
-    }
-
-    public class GoogleMapsIntegrationConfiguration : IGoogleMapsIntegrationConfiguration
-    {
+        [Required]
         public required string ApiKey { get; init; }
 
-        public bool UseMockServices { get; init; }
+        public bool UseMockServices { get; init; } = false;
     }
 }

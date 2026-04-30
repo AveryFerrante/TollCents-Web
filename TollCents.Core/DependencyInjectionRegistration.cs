@@ -10,11 +10,20 @@ namespace TollCents.Core
 {
     public static class DependencyInjectionRegistration
     {
-        public static IServiceCollection RegisterGoogleMapsIntegration(this IServiceCollection services, IIntegrationsConfiguration integrationsConfig)
+        /// <summary>
+        /// Registers necessary services & configurations to run the GoogleMaps integration.
+        /// </summary>
+        /// <param name="services">IServiceCollection instnace.</param>
+        /// <param name="configSection">Configuration section containing necessary values</param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterGoogleMapsIntegration(this IServiceCollection services,
+            IConfigurationSection configSection)
         {
-            ArgumentNullException.ThrowIfNull(integrationsConfig, nameof(integrationsConfig));
-            if (integrationsConfig.Integrations?.GoogleMaps?.UseMockServices ??
-                throw new ArgumentNullException(nameof(IGoogleMapsIntegrationConfiguration.UseMockServices)))
+            services.Configure<GoogleMapsIntegrationConfiguration>(configSection);
+            services.AddOptionsWithValidateOnStart<GoogleMapsIntegrationConfiguration>();
+            bool useMockServices = configSection.GetValue<bool>(nameof(GoogleMapsIntegrationConfiguration.UseMockServices));
+
+            if (useMockServices)
             {
                 services.AddScoped<ITollInformationGateway, TollInformationGatewayMock>();
                 services.AddScoped<IAddressLookupGateway, AddressLookupGatewayMock>();
@@ -25,20 +34,27 @@ namespace TollCents.Core
                 services.AddScoped<IAddressLookupGateway, AddressLookupGateway>();
             }
 
-            services.AddSingleton(integrationsConfig); // TODO: Use IOptions system. Update config to use POCO not interface
             services.AddGoogleApiClients();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Registers necessary services & configurations to run the TEXpressTollCalculator integration.
+        /// </summary>
+        /// <param name="services">IServiceCollection instnace.</param>
+        /// <param name="configSection">Configuration section containing necessary values</param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterTEXpressTollCalculatorIntegration(this IServiceCollection services,
+            IConfigurationSection configSection)
+        {
+            services.Configure<TEXpressIntegrationConfiguration>(configSection);
+            services.AddOptionsWithValidateOnStart<TEXpressIntegrationConfiguration>();
             services.AddScoped<ITEXpressTollPriceCalculator, TEXpressTollPriceCalculator>();
             services.AddScoped<ITEXpressSegmentSkipAnomolies, TEXpressSegmentSkipAnomolies>();
             services.AddMemoryCache();
 
             return services;
-        }
-
-        public static IServiceCollection RegisterGoogleMapsIntegration(this IServiceCollection services, IConfiguration configuration)
-        {
-            var integrationsConfiguration = configuration.Get<IntegrationsConfiguration>();
-            ArgumentNullException.ThrowIfNull(integrationsConfiguration, nameof(configuration));
-            return services.RegisterGoogleMapsIntegration(integrationsConfiguration);
         }
     }
 }

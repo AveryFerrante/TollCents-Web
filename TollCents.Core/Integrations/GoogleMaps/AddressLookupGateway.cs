@@ -5,6 +5,7 @@ using GoogleApi.Entities.Maps.Geocoding.Location.Request;
 using GoogleApi.Entities.Places.AutoComplete.Request;
 using GoogleApi.Interfaces.Maps.Geocode;
 using GoogleApi.Interfaces.Places;
+using Microsoft.Extensions.Options;
 using TollCents.Core.Entities;
 
 namespace TollCents.Core.Integrations.GoogleMaps
@@ -23,13 +24,12 @@ namespace TollCents.Core.Integrations.GoogleMaps
         private readonly string _apiKey;
 
         public AddressLookupGateway(IAutoCompleteApi autoCompleteApi,
-            ILocationGeocodeApi locationGeocodeApi, IIntegrationsConfiguration configuration)
+            ILocationGeocodeApi locationGeocodeApi, IOptions<GoogleMapsIntegrationConfiguration> configuration)
         {
-            var apiKey = configuration?.Integrations?.GoogleMaps?.ApiKey;
-            ArgumentException.ThrowIfNullOrEmpty(apiKey, nameof(configuration.Integrations.GoogleMaps.ApiKey));
+            ArgumentNullException.ThrowIfNull(configuration?.Value, nameof(configuration));
             _autoCompleteApi = autoCompleteApi;
             _locationGeocodeApi = locationGeocodeApi;
-            _apiKey = apiKey;
+            _apiKey = configuration.Value.ApiKey;
         }
 
         public async Task<IEnumerable<PlaceSuggestion>> GetPlaceSuggestionsAsync(string address)

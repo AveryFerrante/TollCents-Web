@@ -3,6 +3,8 @@ using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Entities.Maps.Routes.Directions.Response.Enums;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -26,23 +28,24 @@ namespace TollCents.Core.Integrations.TEXpress
         private readonly string  _dataFilePath;
         private readonly double _tollAccessPointMatchToleranceMiles;
         private readonly double _noTollTagPriceMultiplier;
+        private readonly bool _analysisModeEnabled = false;
         private readonly IMemoryCache _memoryCache;
         private readonly ITEXpressSegmentSkipAnomolies _texpressSegmentSkipAnomoliesService;
         private readonly ILogger<TEXpressTollPriceCalculator> _logger;
         private DebugLogProcessSummary _processSummary = new DebugLogProcessSummary();
+        private static readonly ActivitySource ActivitySource = new ActivitySource("b");
 
-        public TEXpressTollPriceCalculator(IIntegrationsConfiguration configuration,
+        public TEXpressTollPriceCalculator(IOptions<TEXpressIntegrationConfiguration> configuration,
             IMemoryCache memoryCache,
             ITEXpressSegmentSkipAnomolies texpressSegmentSkipAnomoliesService,
             ILogger<TEXpressTollPriceCalculator> logger)
         {
-            ArgumentNullException.ThrowIfNull(configuration.Integrations?.TEXpress,
-                nameof(configuration.Integrations.TEXpress));
-            var config = configuration.Integrations.TEXpress;
+            ArgumentNullException.ThrowIfNull(configuration?.Value);
 
-            _dataFilePath = config.MetadataFilePath;
-            _tollAccessPointMatchToleranceMiles = config.TollAccessPointMatchToleranceMiles;
-            _noTollTagPriceMultiplier = config.NoTollTagPriceMultiplier;
+            _dataFilePath = configuration.Value.MetadataFilePath;
+            _tollAccessPointMatchToleranceMiles = configuration.Value.TollAccessPointMatchToleranceMiles;
+            _noTollTagPriceMultiplier = configuration.Value.NoTollTagPriceMultiplier;
+            _analysisModeEnabled = configuration.Value.AnalysisModeEnabled;
             _memoryCache = memoryCache;
             _texpressSegmentSkipAnomoliesService = texpressSegmentSkipAnomoliesService;
             _logger = logger;
@@ -50,6 +53,8 @@ namespace TollCents.Core.Integrations.TEXpress
 
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
+            //using var activity = _analysisModeEnabled ? ActivitySource.StartActivity("AnalyzeTEXpressTollPrice") : null;
+
             var numberedTollSteps = routeSteps
                 .Select((step, index) => new NumberedTollRouteStep { Step = step, StepNumber = index })
                 .Where(a => IsTollStep(a.Step)).ToList();
@@ -83,6 +88,8 @@ namespace TollCents.Core.Integrations.TEXpress
             List<Coordinate> skipWaypoints = new List<Coordinate>();
             numberedTEXpressSteps.ForEach(currentNumberedStep =>
             {
+                using var activity = ActivitySource.StartActivity("AnalyzeTEXpressTollPrice");
+                activity?.AddEvent(new ActivityEvent($"Analyzing TEXpress Step Number {currentNumberedStep.StepNumber}"));
                 _processSummary = new DebugLogProcessSummary();
                 _logger.LogInformation("Analyzing TEXpress Step Number {StepNumber} | Description \"{StepDescription}\"",
                     currentNumberedStep.StepNumber,
@@ -91,6 +98,11 @@ namespace TollCents.Core.Integrations.TEXpress
                 var currentTEXpressStep = currentNumberedStep.Step;
                 var currentStepNumber = currentNumberedStep.StepNumber;
                 var cardinalDirections = currentTEXpressStep.StartLocation.ToCoordinate().GetCardinalDirections(currentTEXpressStep.EndLocation.ToCoordinate());
+                
+                activity?.AddTag("texpress.step.cardinalDirections", string.Join(", ", cardinalDirections));
+                activity?.AddTag("texpress.step.polyline", currentTEXpressStep.Polyline.EncodedPolyline);
+                activity?.AddTag("texpress.step.maneuver", currentTEXpressStep.NavigationInstruction.Maneuver.ToString());
+
                 _processSummary.StepCardinalDirection = string.Join(", ", cardinalDirections);
                 _processSummary.StepPolyline = currentTEXpressStep.Polyline.EncodedPolyline;
                 _processSummary.StepManeuver = currentTEXpressStep.NavigationInstruction.Maneuver.ToString();
