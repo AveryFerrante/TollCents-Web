@@ -1,5 +1,11 @@
 name: Deploy API Application
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for running'
+        required: false
+        default: 'Manual trigger'
   push:
     branches:
       - main
