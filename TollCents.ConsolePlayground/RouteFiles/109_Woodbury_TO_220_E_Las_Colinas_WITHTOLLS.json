@@ -1,0 +1,838 @@
+{
+  "routes": [
+    {
+      "legs": [
+        {
+          "distanceMeters": 40125,
+          "duration": "2496s",
+          "staticDuration": "1807s",
+          "polyline": {
+            "encodedPolyline": "{osgE~`xlQ@j@?nBATjB?j@@t@?dADb@ERMr@ILCbApAz@fAf@n@^d@zAlBp@|@l@t@NR`@f@LPfApA~BvC`@h@bAnARTtAdBbAnAnA~ATX|@fA|@hAh@r@TV^d@j@r@Z`@t@~@fCbDdApA|@fAZ`@LRb@h@n@v@VZf@l@X^bBvBsA`Bs@z@_AhAqA~A}@hAqBfCGJu@pAGRSr@ERM~@AJEn@?P?RA`A@x@AzC?R@~A?xB?h@?x@@dD?`D@zA?bB?lB@rA?n@?tA?bB@|B?X?`A?R?jA@fB?pE?X?dA@nA?p@Ax@?^?Z?^?l@?rAi@x@OROTw@jAa@j@AV_@~@u@pBS`@e@z@S`@a@z@wApCc@z@{@bB@TS^_@r@s@xAeArBe@~@o@nAkA~BmAvBQ^}AfDIR}AlEaArDCLELk@tCUhAOfAIx@MtAg@nEg@jEUzAa@jC[tAs@tCo@zBs@fB_@~@KZe@dAWf@Yh@{@rAsAhBwAdBk@l@k@n@oAtAeBlB_@d@aCrCi@p@cAvAe@p@MRq@bASZq@fAmAtB[l@m@hA]n@uAjCMX{@bBq@|A}@fBs@tAqCpF_@v@iBlDoClFeC|EqBvDi@fAcAtBq@tAw@dBOXiChGo@xAe@hAk@xAO\\M\\s@lBm@hBi@zAaAxCg@rAe@hAuA|CyB`EwA|Bs@bAiB~Bc@f@kAtAmArAsAlAMJu@l@o@b@yBrA_B|@iE~BgAl@o@\\aAh@eAj@}A|@o@^sBvA}BfBWVc@`@c@`@]^sBbCk@t@q@~@]j@gAfBq@nAw@vAy@~Ak@jAa@z@q@vA[n@i@fAUd@u@vAYh@k@jAc@z@c@z@cAnB]t@KVw@dBaAlBcDvGwC~FmA~BeDjGqDdHw@|AcB|CcAnBuAfCg@~@iAjBoBhDc@t@aBlCyC`FkB`D}@|A_AxAgAhB[j@uArBaBdCYd@sClEKd@g@vAqC~F}AtCIPCHoBxD}DdHeBhDk@lAaGpM{@bBKV_@|@o@pAm@pAm@pAg@hA]v@sAvCsApDITaAxCIXeAdEi@bCQdAYvBEXE^W~BYfCKrAUdDUrECtAEzB?J?~@?~A?xB?bH?dAAvAAl@?nD?tL?hD?lA?~A?fA?z[CrK@rADhD@hE?lBCjCCr@CfAIxBC`@]nGIfAc@jIUpDM|BEbAExAExBA^AbB?tB?bG?~D?tEAlO?nC?`D?jA@nB?nA?REvB?PGhB?BKnBE~@IvAG~@G`A[bEObBO`Bc@jFMzBKpBGpCCbB?l@@~H@fA?fA@fC?`DCjK?hGCdL@lDArI?t@?lA?`A?~@A|@AbMCvKArC?vA@X@`H?zBBvD@pB@j@@h@DbFHnGFnDD|ADnA\\bFDj@b@~DXtBZlBp@nDBJDPn@hCZjAzA|E`CvH~CxJlBbGd@xArA~DLd@f@|ABFHZFRd@xAjEdN\\jAh@`BHVDJLb@t@~BnA~D\\dAZ~@rAbENb@|BhHlApEH^~@vE\\rBVzAlAnHhAzGl@lDVlAfApFNx@hBzIl@bDfA|GrA|J\\lC@LJt@PzARnBLlAVlBHf@RrAJn@Lp@l@tDNdAd@tCz@pFh@nDv@~E@Hd@zC`@hCx@hFE\\HrAPvDPnDBVPlB\\|CCTf@pEj@lFFd@JjA?BRdBLlB^lGHfE@xA@jA?h@@n@@NLtATjAN`@Vp@JRZd@`@f@JJr@l@LFLFb@RRHjAVt@F^?lCOlJe@bKYpFGhACnAAd@Ah@?nH?J?J@pB?vC@~AAtB@J@~A@dBBpAD`DBdFAvAChEGT?rD?lE@bC?dA?hA@`A?p@@L?`ABzFH|B?~DEL?pFKnEAhB?bDApE?zIDtBDvABtBJ|DNjBHb@BxETfADx@Bb@@bALbA@lA@f@AjACH?p@ApBC@?`CDj@Bt@DfBPbANhAN\\AfBf@vAd@p@Vj@Rx@Zt@VdA^b@P|@ZzAh@dA`@dBl@x@VhAb@p@Vb@P`@R|CnAt@ZpChAl@ZRHrB`Aj@Zh@XtBhAnEbCd@VlAp@`@TXP~@f@rBjAjDnB`GfDxBnA~BpAbAj@hCzADRNLzAfAxAhAzD|CbBbBFXzArApAjAZXj@h@e@j@s@|@a@^a@^MJsBxAm@j@EDu@z@e@t@KPg@bAs@zA[p@MZIPu@dBSl@IP_@~@Qd@Ul@iAtEm@dCSt@w@dCaA|BmBjEKRGN{@jBaBrD}@`BIRUd@Wz@c@fB_@~@y@bB[p@S`@MPAVEH{@~AeCnEa@`AUp@M^KX}@fCsA|CcAzBi@tACFc@jACHgAdD?TeAxB}B`Eu@hA{A|BMNwAfBaBfB]^u@t@uApAa@`@mAhAy@z@O?C@UPmA~@e@\\eBtA_Az@y@t@cA~@c@`@OB_AfAu@l@SPiB|AMLIF{@t@]Ts@`@m@Pc@Fc@?{A@e@JYJID}AfAUg@Wq@c@mAa@oAXSz@[x@[f@Sh@WLGl@a@b@a@PU@A@AT]z@wAlArAt@oA"
+          },
+          "startLocation": {
+            "latLng": {
+              "latitude": 32.8730982,
+              "longitude": -96.6300775
+            }
+          },
+          "endLocation": {
+            "latLng": {
+              "latitude": 32.8666786,
+              "longitude": -96.9394262
+            }
+          },
+          "steps": [
+            {
+              "distanceMeters": 73,
+              "staticDuration": "13s",
+              "polyline": {
+                "encodedPolyline": "{osgE~`xlQ@j@?nB"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8730982,
+                  "longitude": -96.6300775
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8730924,
+                  "longitude": -96.630861799999991
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "DEPART",
+                "instructions": "Head west on E Woodbury Dr toward S First St"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "240 ft"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 197,
+              "staticDuration": "51s",
+              "polyline": {
+                "encodedPolyline": "yosgEzexlQATjB?j@@t@?dADb@ERM"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8730924,
+                  "longitude": -96.630861799999991
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8714383,
+                  "longitude": -96.6309062
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Turn left at the 1st cross street onto S First St"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.1 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 1577,
+              "staticDuration": "137s",
+              "polyline": {
+                "encodedPolyline": "oesgEdfxlQr@ILCbApAz@fAf@n@^d@zAlBp@|@l@t@NR`@f@LPfApA~BvC`@h@bAnARTtAdBbAnAnA~ATX|@fA|@hAh@r@TV^d@j@r@Z`@t@~@fCbDdApA|@fAZ`@LRb@h@n@v@VZf@l@X^bBvB"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8714383,
+                  "longitude": -96.6309062
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8613125,
+                  "longitude": -96.6424985
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right onto W Centerville Rd"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "1.0 mi"
+                },
+                "staticDuration": {
+                  "text": "2 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 1799,
+              "staticDuration": "190s",
+              "polyline": {
+                "encodedPolyline": "efqgErnzlQsA`Bs@z@_AhAqA~A}@hAqBfCGJu@pAGRSr@ERM~@AJEn@?P?RA`A@x@AzC?R@~A?xB?h@?x@@dD?`D@zA?bB?lB@rA?n@?tA?bB@|B?X?`A?R?jA@fB?pE?X?dA@nA?p@Ax@?^?Z?^?l@?rA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8613125,
+                  "longitude": -96.6424985
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8641425,
+                  "longitude": -96.6604323
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right onto E Northwest Hwy"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "1.1 mi"
+                },
+                "staticDuration": {
+                  "text": "3 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 137,
+              "staticDuration": "19s",
+              "polyline": {
+                "encodedPolyline": "{wqgEt~}lQi@x@OROTw@jAa@j@"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8641425,
+                  "longitude": -96.6604323
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8649607,
+                  "longitude": -96.6615336
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right onto Interstate 635 Service Rd/Lyndon B Johnson Fwy"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "449 ft"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 9330,
+              "staticDuration": "331s",
+              "polyline": {
+                "encodedPolyline": "_}qgEpe~lQAV_@~@u@pBS`@e@z@S`@a@z@wApCc@z@{@bB@TS^_@r@s@xAeArBe@~@o@nAkA~BmAvBQ^}AfDIR}AlEaArDCLELk@tCUhAOfAIx@MtAg@pEg@hEUzAa@jC[tAs@tCo@zBs@fB_@~@KZe@dAWf@Yh@{@rAsAhBwAdBk@l@k@n@oAtAeBlB_@d@aCrCi@p@cAvAg@r@KPq@bASZq@fAmAtB[l@m@hA]n@uAjCMX{@bBq@|A}@fBs@tAqCpF_@v@iBlDoClFeC|EqBvDi@fAcAtBq@tAgA~BiChGo@xAe@hAk@xAO\\M\\s@lBm@hBi@zAaAxCg@rAe@hAuA|CyB`EwA|Bs@bAiB~Bc@f@kAtAmArAsAlAMJu@l@o@b@yBrA_B|@iE~BgAl@o@\\aAh@eAj@}A|@o@^sBvA}BfBWVc@`@c@`@]^sBbCk@t@q@~@]j@gAfBq@nAw@vAy@~Ak@jAa@z@q@vA[n@i@fAUd@u@vAYh@k@jAgAvBcAnB]t@KVw@dBaAlBcDvGwC~FmA~BeDjGqDdHw@|AcB|CcAnBuAfCg@~@iAjBoBhDc@t@aBlCyC`FkB`D}@|A_AxAgAhB[j@uArBaBdCYd@sClE"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8649607,
+                  "longitude": -96.6615336
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.9149239,
+                  "longitude": -96.7399341
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_LEFT",
+                "instructions": "Slight left to merge onto I-635 W"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "5.8 mi"
+                },
+                "staticDuration": {
+                  "text": "6 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 994,
+              "staticDuration": "34s",
+              "polyline": {
+                "encodedPolyline": "gu{gEpommQKd@g@vAqC~F}AtCIPCHoBxD}DdHeBhDk@lAaGpM"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.9149239,
+                  "longitude": -96.7399341
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.9199784,
+                  "longitude": -96.7486954
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_LEFT",
+                "instructions": "Take the exit on the left toward Interstate 635 TEXpress"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.6 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 13174,
+              "staticDuration": "413s",
+              "polyline": {
+                "encodedPolyline": "{t|gEjfomQ{@bBKV_@|@o@pAm@pAm@pAg@hA]v@sAvCsApDITaAxCIXeAdEi@bCQdAYvBEXE^W~BYfCKrAUdDUrECtAEzB?J?~@?~A?xB?bH?dAAvAAl@?nD?tL?hD?lA?~A?fA?z[CrK@rADhD@hE?lBCjCCr@CfAIxBC`@]nGIfAc@jIUpDM|BEbAExAExBA^AbB?tB?bG?~D?tEAlO?nC?`D?jA@nB?nA?REvB?PGhB?BKnBE~@IvAG~@G`A[bEObBO`Bc@jFMzBKpBGpCCbB?l@@~H@fA?fA@fC?`DCjK?hGCdL@lDArI?t@?lA?`A?~@A|@AbMCvKArC?vA@X@`H?zBBvD@pB@j@@h@DbFHnGFnDD|ADnA\\bFDj@b@~DXtBZlBp@nDBJDPn@hCZjAzA|E`CvH~CxJlBbGd@xArA~DLd@f@|ABFHZFRd@xAjEdN\\jAh@`BHVDJLb@t@~BnA~D\\dAZ~@rAbENb@|BhHlApEH^~@vE\\rBVzAlAnHhAzGl@lDVlAfApF?@Nv@hBzIl@bDfA|GrA|J\\lC@LJt@PzARnBLlAVlBHf@RrAJn@Lp@l@tDNdAd@tCz@pFh@nDv@~E@Hd@zC`@hCx@hF"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.9199784,
+                  "longitude": -96.7486954
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.9102773,
+                  "longitude": -96.8849268
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Continue onto Interstate 635 TEXpress\nToll road"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "8.2 mi"
+                },
+                "staticDuration": {
+                  "text": "7 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 693,
+              "staticDuration": "25s",
+              "polyline": {
+                "encodedPolyline": "gxzgExyinQE\\HrAPvDPnDBVPlB\\|CCTf@pEj@lFFd@JjA?BRdB"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.9102773,
+                  "longitude": -96.8849268
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.909222800000009,
+                  "longitude": -96.892209999999992
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_RIGHT",
+                "instructions": "Take the I-35E TExpress S/I-35E TExpress N exit\nToll road"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.4 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 1493,
+              "staticDuration": "55s",
+              "polyline": {
+                "encodedPolyline": "sqzgEhgknQLlB^lGHfE@xA@jA?h@@n@@NLtATjAN`@Vp@JRZd@`@f@JJr@l@LFLFb@RRHjAVt@F^?lCOlJe@bKYpFGhACnAA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.909222800000009,
+                  "longitude": -96.892209999999992
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.900141399999995,
+                  "longitude": -96.898399099999992
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "STRAIGHT",
+                "instructions": "Take the South ramp\nToll road"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.9 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 3141,
+              "staticDuration": "103s",
+              "polyline": {
+                "encodedPolyline": "{xxgE~mlnQd@Ah@?nH?J?J@pB?vC@~AAtB@J@~A@dBBpAD`DBdFAvAChEGT?rD?lE@bC?dA?hA@`A?p@@L?`ABzFH|B?~DEL?pFKnEAhB?bDApE?zIDtBDvABtBJ|DNjBHb@BxETfADx@Bb@@"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.900141399999995,
+                  "longitude": -96.898399099999992
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8719113,
+                  "longitude": -96.8988783
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "NAME_CHANGE",
+                "instructions": "Continue onto N Walton Walker Texpress\nToll road"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "2.0 mi"
+                },
+                "staticDuration": {
+                  "text": "2 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 410,
+              "staticDuration": "15s",
+              "polyline": {
+                "encodedPolyline": "mhsgE~plnQbALbA@lA@f@AjACH?p@ApBC@?`CDj@Bt@D"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8719113,
+                  "longitude": -96.8988783
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.868237,
+                  "longitude": -96.898991
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "STRAIGHT",
+                "instructions": "Take the TX-12Loop S exit"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.3 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 2175,
+              "staticDuration": "78s",
+              "polyline": {
+                "encodedPolyline": "oqrgEtqlnQfBPbANhAN\\AfBf@vAd@p@Vj@Rx@Zt@VdA^b@P|@ZzAh@dA`@dBl@x@VhAb@p@Vb@P`@R|CnAt@ZpChAl@ZRHrB`Aj@Zh@XtBhAnEbCd@VlAp@`@TXP~@f@rBjAjDnB`GfDxBnA~BpAbAj@hCzA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.868237,
+                  "longitude": -96.898991
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8504787,
+                  "longitude": -96.9084764
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "STRAIGHT",
+                "instructions": "Take the ramp onto TX-12 Loop S"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "1.4 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 357,
+              "staticDuration": "17s",
+              "polyline": {
+                "encodedPolyline": "obogE~lnnQDRNLzAfAxAhAzD|CbBbBFX"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8504787,
+                  "longitude": -96.9084764
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8479792,
+                  "longitude": -96.9107983
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_RIGHT",
+                "instructions": "Take the exit toward TX-114/DFW Airport/Grapevine"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.2 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 173,
+              "staticDuration": "18s",
+              "polyline": {
+                "encodedPolyline": "{rngEn{nnQzArApAjAZXj@h@"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8479792,
+                  "longitude": -96.9107983
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8467549,
+                  "longitude": -96.911935800000009
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "MERGE",
+                "instructions": "Merge onto Loop 12"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.1 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 1602,
+              "staticDuration": "109s",
+              "polyline": {
+                "encodedPolyline": "ekngErbonQe@j@s@|@a@^a@^MJsBxAm@j@EDu@z@e@t@KPg@bAs@zA[p@MZIPu@dBSl@IP_@~@Qd@Ul@iAtEm@dCSt@w@dCaA|BmBjESb@{@jBaBrD}@`B_@x@Wz@c@fB_@~@y@bB[p@S`@MP"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8467549,
+                  "longitude": -96.911935800000009
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.854748199999996,
+                  "longitude": -96.9259395
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right onto E John W Carpenter Fwy"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "1.0 mi"
+                },
+                "staticDuration": {
+                  "text": "2 mins"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 1418,
+              "staticDuration": "56s",
+              "polyline": {
+                "encodedPolyline": "e}ogEbzqnQAVEH{@~AeCnEa@`AUp@M^KX}@fCsA|CcAzBi@tACFc@jACHgAdD?TeAxB}B`Eu@hA{A|BMNwAfBaBfB]^u@t@uApAa@`@mAhAy@z@"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.854748199999996,
+                  "longitude": -96.9259395
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.862443899999995,
+                  "longitude": -96.9378054
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_LEFT",
+                "instructions": "Slight left to merge onto TX-114 W"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.9 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 343,
+              "staticDuration": "15s",
+              "polyline": {
+                "encodedPolyline": "gmqgEhdtnQO?C@UPmA~@e@\\eBtA_Az@y@t@cA~@c@`@OB"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.862443899999995,
+                  "longitude": -96.9378054
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8649485,
+                  "longitude": -96.9398908
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "RAMP_RIGHT",
+                "instructions": "Take the exit toward O'Connor Rd"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.2 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 509,
+              "staticDuration": "43s",
+              "polyline": {
+                "encodedPolyline": "}|qgEhqtnQ_AfAu@l@SPiB|AMLIF{@t@]Ts@`@m@Pc@Fc@?{A@e@JYJID}AfA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8649485,
+                  "longitude": -96.9398908
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8688906,
+                  "longitude": -96.9423546
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "MERGE",
+                "instructions": "Merge onto E John W Carpenter Fwy"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.3 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 133,
+              "staticDuration": "18s",
+              "polyline": {
+                "encodedPolyline": "qurgEt`unQUg@Wq@c@mAa@oA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8688906,
+                  "longitude": -96.9423546
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8694732,
+                  "longitude": -96.9411088
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right onto N O'Connor Blvd"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "436 ft"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 291,
+              "staticDuration": "36s",
+              "polyline": {
+                "encodedPolyline": "eyrgE|xtnQXSz@[x@[f@Sh@WLGl@a@b@a@PU@A@AT]z@wA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8694732,
+                  "longitude": -96.9411088
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8673401,
+                  "longitude": -96.9394097
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right at the 1st cross street onto E Las Colinas Blvd"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "0.2 mi"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 58,
+              "staticDuration": "16s",
+              "polyline": {
+                "encodedPolyline": "{krgEhntnQlArA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8673401,
+                  "longitude": -96.9394097
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8669517,
+                  "longitude": -96.9398264
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_RIGHT",
+                "instructions": "Turn right"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "190 ft"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            },
+            {
+              "distanceMeters": 48,
+              "staticDuration": "15s",
+              "polyline": {
+                "encodedPolyline": "mirgE|ptnQt@oA"
+              },
+              "startLocation": {
+                "latLng": {
+                  "latitude": 32.8669517,
+                  "longitude": -96.9398264
+                }
+              },
+              "endLocation": {
+                "latLng": {
+                  "latitude": 32.8666786,
+                  "longitude": -96.9394262
+                }
+              },
+              "navigationInstruction": {
+                "maneuver": "TURN_LEFT",
+                "instructions": "Turn left\nDestination will be on the left"
+              },
+              "localizedValues": {
+                "distance": {
+                  "text": "157 ft"
+                },
+                "staticDuration": {
+                  "text": "1 min"
+                }
+              },
+              "travelMode": "DRIVE"
+            }
+          ],
+          "travelAdvisory": {
+            "tollInfo": {}
+          },
+          "localizedValues": {
+            "distance": {
+              "text": "24.9 mi"
+            },
+            "duration": {
+              "text": "42 mins"
+            },
+            "staticDuration": {
+              "text": "30 mins"
+            }
+          }
+        }
+      ],
+      "distanceMeters": 40125,
+      "duration": "2496s",
+      "staticDuration": "1803s",
+      "polyline": {
+        "encodedPolyline": "{osgE~`xlQ@j@?nBATjB?j@@t@?dADb@ERMr@ILCbApAz@fAf@n@^d@zAlBp@|@l@t@NR`@f@LPfApA~BvC`@h@bAnARTtAdBbAnAnA~ATX|@fA|@hAh@r@TV^d@j@r@Z`@t@~@fCbDdApA|@fAZ`@LRb@h@n@v@VZf@l@X^bBvBsA`Bs@z@_AhAqA~A}@hAqBfCGJu@pAGRSr@ERM~@AJEn@?P?RA`A@x@AzC?R@~A?xB?h@?x@@dD?`D@zA?bB?lB@rA?n@?tA?bB@|B?X?`A?R?jA@fB?pE?X?dA@nA?p@Ax@?^?Z?^?l@?rAi@x@OROTw@jAa@j@AV_@~@u@pBS`@e@z@S`@a@z@wApCc@z@{@bB@TS^_@r@s@xAeArBe@~@o@nAkA~BmAvBQ^}AfDIR}AlEaArDCLELk@tCUhAOfAIx@MtAg@nEg@jEUzAa@jC[tAs@tCo@zBs@fB_@~@KZe@dAWf@Yh@{@rAsAhBwAdBk@l@k@n@oAtAeBlB_@d@aCrCi@p@cAvAe@p@MRq@bASZq@fAmAtB[l@m@hA]n@uAjCMX{@bBq@|A}@fBs@tAqCpF_@v@iBlDoClFeC|EqBvDi@fAcAtBq@tAw@dBOXiChGo@xAe@hAk@xAO\\M\\s@lBm@hBi@zAaAxCg@rAe@hAuA|CyB`EwA|Bs@bAiB~Bc@f@kAtAmArAsAlAMJu@l@o@b@yBrA_B|@iE~BgAl@o@\\aAh@eAj@}A|@o@^sBvA}BfBWVc@`@c@`@]^sBbCk@t@q@~@]j@gAfBq@nAw@vAy@~Ak@jAa@z@q@vA[n@i@fAUd@u@vAYh@k@jAc@z@c@z@cAnB]t@KVw@dBaAlBcDvGwC~FmA~BeDjGqDdHw@|AcB|CcAnBuAfCg@~@iAjBoBhDc@t@aBlCyC`FkB`D}@|A_AxAgAhB[j@uArBaBdCYd@sClEKd@g@vAqC~F}AtCIPCHoBxD}DdHeBhDk@lAaGpM{@bBKV_@|@o@pAm@pAm@pAg@hA]v@sAvCsApDITaAxCIXeAdEi@bCQdAYvBEXE^W~BYfCKrAUdDUrECtAEzB?J?~@?~A?xB?bH?dAAvAAl@?nD?tL?hD?lA?~A?fA?z[CrK@rADhD@hE?lBCjCCr@CfAIxBC`@]nGIfAc@jIUpDM|BEbAExAExBA^AbB?tB?bG?~D?tEAlO?nC?`D?jA@nB?nA?REvB?PGhB?BKnBE~@IvAG~@G`A[bEObBO`Bc@jFMzBKpBGpCCbB?l@@~H@fA?fA@fC?`DCjK?hGCdL@lDArI?t@?lA?`A?~@A|@AbMCvKArC?vA@X@`H?zBBvD@pB@j@@h@DbFHnGFnDD|ADnA\\bFDj@b@~DXtBZlBp@nDBJDPn@hCZjAzA|E`CvH~CxJlBbGd@xArA~DLd@f@|ABFHZFRd@xAjEdN\\jAh@`BHVDJLb@t@~BnA~D\\dAZ~@rAbENb@|BhHlApEH^~@vE\\rBVzAlAnHhAzGl@lDVlAfApFNx@hBzIl@bDfA|GrA|J\\lC@LJt@PzARnBLlAVlBHf@RrAJn@Lp@l@tDNdAd@tCz@pFh@nDv@~E@Hd@zC`@hCx@hFE\\HrAPvDPnDBVPlB\\|CCTf@pEj@lFFd@JjA?BRdBLlB^lGHfE@xA@jA?h@@n@@NLtATjAN`@Vp@JRZd@`@f@JJr@l@LFLFb@RRHjAVt@F^?lCOlJe@bKYpFGhACnAAd@Ah@?nH?J?J@pB?vC@~AAtB@J@~A@dBBpAD`DBdFAvAChEGT?rD?lE@bC?dA?hA@`A?p@@L?`ABzFH|B?~DEL?pFKnEAhB?bDApE?zIDtBDvABtBJ|DNjBHb@BxETfADx@Bb@@bALbA@lA@f@AjACH?p@ApBC@?`CDj@Bt@DfBPbANhAN\\AfBf@vAd@p@Vj@Rx@Zt@VdA^b@P|@ZzAh@dA`@dBl@x@VhAb@p@Vb@P`@R|CnAt@ZpChAl@ZRHrB`Aj@Zh@XtBhAnEbCd@VlAp@`@TXP~@f@rBjAjDnB`GfDxBnA~BpAbAj@hCzADRNLzAfAxAhAzD|CbBbBFXzArApAjAZXj@h@e@j@s@|@a@^a@^MJsBxAm@j@EDu@z@e@t@KPg@bAs@zA[p@MZIPu@dBSl@IP_@~@Qd@Ul@iAtEm@dCSt@w@dCaA|BmBjEKRGN{@jBaBrD}@`BIRUd@Wz@c@fB_@~@y@bB[p@S`@MPAVEH{@~AeCnEa@`AUp@M^KX}@fCsA|CcAzBi@tACFc@jACHgAdD?TeAxB}B`Eu@hA{A|BMNwAfBaBfB]^u@t@uApAa@`@mAhAy@z@O?C@UPmA~@e@\\eBtA_Az@y@t@cA~@c@`@OB_AfAu@l@SPiB|AMLIF{@t@]Ts@`@m@Pc@Fc@?{A@e@JYJID}AfAUg@Wq@c@mAa@oAXSz@[x@[f@Sh@WLGl@a@b@a@PU@A@AT]z@wAlArAt@oA"
+      },
+      "description": "Interstate 635 TEXpress",
+      "warnings": [
+        "This route has tolls.",
+        "This route includes a highway."
+      ],
+      "viewport": {
+        "low": {
+          "latitude": 32.8467549,
+          "longitude": -96.9423546
+        },
+        "high": {
+          "latitude": 32.9260489,
+          "longitude": -96.6300775
+        }
+      },
+      "travelAdvisory": {
+        "tollInfo": {}
+      },
+      "localizedValues": {
+        "distance": {
+          "text": "24.9 mi"
+        },
+        "duration": {
+          "text": "42 mins"
+        },
+        "staticDuration": {
+          "text": "30 mins"
+        }
+      },
+      "routeToken": "Cv8CCoMCMoACGuQBCk4CFhWCAa40OaLJAppGtG_u3pEBp5dhjK-hAdODnB3IoJMdmtWpUIj6ilDgwcQC3fq1AuKga8niYdPxauTGAtiXI4CtGo2HAtajAc_TAQASTDcIJnnMUq3gGdz7Frv3lSsgN1kYWmQPXV-nxkm356HYJKt1VsiUhPk0xTqHzPaup1ndm1Wg4x0NFM_oM_EK01WpOWIUXLW7AqtIZ9waFgAaBClZBIwB1gQCpQMADRQVEx4XGxYqE1lhdh4LdXd2AAADAyBtER4dF24yAgYJPc65Lz5F5D1fP0j9m66Kupux7ZUBIhdBcl9vYWVYOEJPREpxdUVQdS1YbGlRcxAFGl4KXAoYCg0KAggBEQAAAAAAgGZAEarx0k2i5LJAEhYIABADEAYQExASGAJCBBoCCAVKAggBGgkKBAgCEAISAU4iGwoXQXJfb2FhT2JBLURKcXVFUHUtWGxpUXNwASgBIhUAxREZSUClmQREdI76JzFDQCwEKuUaGAoKDWYJmBMVmWtnxhIKDQAMmBMVjmtnxiICEAE",
+      "routeLabels": [
+        "DEFAULT_ROUTE"
+      ],
+      "polylineDetails": {}
+    }
+  ],
+  "geocodingResults": {
+    "origin": {
+      "geocoderStatus": {},
+      "type": [
+        "premise",
+        "street_address"
+      ],
+      "placeId": "ChIJL1SdRg6nToYRWVEC6wCdCqE"
+    },
+    "destination": {
+      "geocoderStatus": {},
+      "type": [
+        "premise",
+        "street_address"
+      ],
+      "placeId": "ChIJj3ytBL-CToYRGX37BjhNQJ8"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-﻿using TollCents.Core.Integrations.TEXpress.Entities;
+﻿using TollCents.Core.Entities;
 
 namespace TollCents.Core.Integrations.GoogleMaps.Utilities
 {

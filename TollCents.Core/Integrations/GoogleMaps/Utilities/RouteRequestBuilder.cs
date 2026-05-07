@@ -1,4 +1,5 @@
-﻿using GoogleApi.Entities.Common.Enums;
+﻿using GoogleApi.Entities.Common;
+using GoogleApi.Entities.Common.Enums;
 using GoogleApi.Entities.Maps.Routes.Common;
 using GoogleApi.Entities.Maps.Routes.Common.Enums;
 using GoogleApi.Entities.Maps.Routes.Directions.Request;
@@ -29,6 +30,7 @@ namespace TollCents.Core.Integrations.GoogleMaps.Utilities
                 Key = apiKey,
                 Origin = new RouteWayPoint { Address = addressRequest.StartAddress },
                 Destination = new RouteWayPoint { Address = addressRequest.EndAddress },
+                Intermediates = addressRequest.ViaWaypoints?.Select(wp => new RouteWayPoint { Location = new RouteLocation { LatLng = new LatLng(wp.Latitude, wp.Longitude) }, Via = true }).ToList() ?? [],
                 Region = "US",
                 Language = Language.English,
                 RoutingPreference = RoutingPreference.TrafficAwareOptimal,
