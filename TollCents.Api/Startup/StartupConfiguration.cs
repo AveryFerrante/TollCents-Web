@@ -2,7 +2,6 @@
 using System.Threading.RateLimiting;
 using TollCents.Api.Authentication;
 using TollCents.Api.Models.Attributes;
-using TollCents.Core.Integrations;
 
 namespace TollCents.Api.Startup
 {
@@ -13,6 +12,8 @@ namespace TollCents.Api.Startup
             var applicationConfiguration = configuration.Get<ApplicationConfiguration>();
             ArgumentNullException.ThrowIfNull(applicationConfiguration, nameof(applicationConfiguration));
 
+            services.Configure<AuthenticationConfiguration>(configuration.GetSection(AuthenticationConfiguration.SectionName));
+            services.AddOptionsWithValidateOnStart<AuthenticationConfiguration>();
             services.AddSingleton<IAccessCodeValidationService, AccessCodeValidationService>();
 
             services.ConfigureCorsPolicies();

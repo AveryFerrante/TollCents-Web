@@ -1,0 +1,74 @@
+name: Deploy API Application
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
+      # - name: Restore dependencies
+      #   run: dotnet restore
+      # - name: Build the application
+      #   run: dotnet build --configuration Release --no-restore
+      - name: Publish the application
+        run: dotnet publish --configuration Release --runtime linux-x64 --self-contained true --output ./publish
+
+      - name: Replace tokens
+        uses: qetza/replacetokens-action@v1
+        with:
+          sources: ./publish/**/appsettings.json
+          variables: '[${{ toJSON(secrets) }}]'
+      - name: Token Replacement Output
+        run: |
+          echo "files     : ${{ steps.replace-tokens.outputs.files }}"
+          echo "replaced  : ${{ steps.replace-tokens.outputs.replaced }}"
+          echo "tokens    : ${{ steps.replace-tokens.outputs.tokens }}"
+
+      - name: Create published tar
+        run: tar -czf release.tar.gz -C ./publish .
+
+      - name: Ensure deployment directory exists on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ variables.SERVER_HOST }}
+          username: ${{ variables.SERVER_USERNAME }}
+          key: ${{ secrets.TOLLCENTS_SSH_KEY }}
+          script: |
+            mkdir -p "/var/www/tollcents/deploy/"
+
+      - name: Upload zip to server deploy directory
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ variables.SERVER_HOST }}
+          username: ${{ variables.SERVER_USERNAME }}
+          key: ${{ secrets.TOLLCENTS_SSH_KEY }}
+          source: "release.tar.gz"
+          target: "/var/www/tollcents/deploy/"
+
+      - name: Execute atomic deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ variables.SERVER_HOST }}
+          username: ${{ variables.SERVER_USERNAME }}
+          key: ${{ secrets.TOLLCENTS_SSH_KEY }}
+          script: |
+            cd /var/www/tollcents/deploy/
+            tar -xzf release.tar.gz
+            rm release.tar.gz
+            cd ..
+            rm -rf /var/www/tollcents/api/* # remove API application code
+            mv /var/www/tollcents/deploy/* /var/www/tollcents/api/ # copy new application code
+            rm -rf /var/www/tollcents/deploy # remove deploy folder
+            cd /var/www/tollcents/api/
+            chmod +x TollCents.Api # Give correct permissions to entry file
+            sudo systemctl restart tollcents # restart the service
+
+
+
