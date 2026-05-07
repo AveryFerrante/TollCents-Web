@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 using System.Text.Json;
 
@@ -9,7 +10,8 @@ namespace TollCents.Api.Authentication
         Task<bool> IsValidAccessCode(string? accessCode);
     }
 
-    public class AccessCodeValidationService(IMemoryCache memoryCache) : IAccessCodeValidationService
+    public class AccessCodeValidationService(IMemoryCache memoryCache,
+        IOptions<AuthenticationConfiguration> configuration) : IAccessCodeValidationService
     {
         private const string _memoryCacheKey = "access-code-information";
         private readonly IMemoryCache _memoryCache = memoryCache;
@@ -35,12 +37,7 @@ namespace TollCents.Api.Authentication
 
         private async Task<IEnumerable<AuthenticationInformation>> LoadAuthenticationInformationFromConfig()
         {
-            // TODO: Make this work with w/e cloud provider storage solution used. Not local file.
-            var assemblyLocation = Assembly.GetExecutingAssembly().Location;
-            var authenticationFileSubDirectory = Path.Combine("Authentication", "authenticationInformation.json");
-            var executionDirectory = Path.GetDirectoryName(assemblyLocation) ?? string.Empty;
-            var filePath = Path.Combine(executionDirectory, authenticationFileSubDirectory);
-
+            var filePath = configuration.Value.FilePath;
             if (!File.Exists(filePath))
                 throw new FileLoadException("Expected authentication file to exist at path " + filePath);
 

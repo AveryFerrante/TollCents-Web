@@ -1,4 +1,8 @@
-﻿# --- Function Definitions ---
+﻿param (
+    [bool]$DeploySegmentData = $false
+)
+
+# --- Function Definitions ---
 # These must come first so they are available when the script calls them
 
 function Get-NestedPropertyValue {
@@ -87,10 +91,12 @@ function Sync-AppsettingValue {
 # CONFIGURATION
 $WorkingDir = "$pwd\build-output"
 $ProjectDir = Resolve-Path "$PWD\..\TollCents.Api"
+$SegmentDataFilePath = Resolve-Path "$PWD\..\Data\texpress-segments.json"
 $BuildCommand = "dotnet publish --configuration Release --runtime linux-x64 --self-contained true -o $WorkingDir"
 $RemoteUser = "tollcents"
 $RemoteHost = "tollcents.com"
 $RemotePath = "/var/www/tollcents/api"
+$RemoteSegmentDataFilePath = "/var/www/tollcents/data"
 $ServiceName = "tollcents"
 $ApiKeyObjectPath = "Integrations.GoogleMaps.ApiKey"
 $ApplicationEntryFile = "TollCents.Api"
@@ -127,10 +133,21 @@ Write-Host "📦 Copying zipped build to server..."
 ssh "${RemoteUser}@${RemoteHost}" "mkdir -p $RemoteTempDir"
 scp "$WorkingDir\$ZipFileName" "${RemoteUser}@${RemoteHost}:${RemoteTempDir}/"
 
+if ($DeploySegmentData) {
+    Write-Host "Deploying segment data..."
+    if (-not (Test-Path $SegmentDataFilePath)) {
+        Write-Host "No segment file found at path $SegmentDataFilePath. Skipping segment data deployment." -ForegroundColor Yellow
+    } else {
+        scp "$SegmentDataFilePath" "${RemoteUser}@${RemoteHost}:${RemoteSegmentDataFilePath}/"
+        Write-Host "Segment data deployed successfully."
+    }
+} else {
+    Write-Host "Skipping segment data deploy due to parameter setting."
+}
+
 Write-Host "🚀 Executing atomic deployment on server..."
 $remoteCommands = "cd $RemoteTempDir; tar -xzf $ZipFileName; rm $ZipFileName; rm -rf $RemotePath; cd ..; mv $RemoteTempDir $RemotePath; cd $RemotePath; chmod +x $ApplicationEntryFile; sudo systemctl restart $ServiceName"
 ssh "${RemoteUser}@${RemoteHost}" $remoteCommands
-
 
 Write-Host "🧹 Cleaning up local machine..."
 Remove-Item $WorkingDir -Recurse
