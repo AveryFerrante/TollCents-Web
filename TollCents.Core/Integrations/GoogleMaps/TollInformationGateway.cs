@@ -73,7 +73,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
             return MapToRouteInformation(response);
         }
-        private async Task<TollRouteInformation?> MapToTollRouteInformation(RoutesDirectionsResponse response, bool hasTollPass)
+        private async Task<TollRouteInformation?> MapToTollRouteInformation(RoutesDirectionsResponse? response, bool hasTollPass)
         {
             if (response is null || response.Status != Status.Ok || !response.Routes.Any())
                 return null;
