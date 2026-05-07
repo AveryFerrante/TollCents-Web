@@ -20,14 +20,12 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Echo dir
-        run: echo $(pwd)
-
       - name: Publish the application
         run: dotnet publish TollCents.Api --configuration Release --runtime linux-x64 --self-contained true --output ./publish
 
       - name: Replace tokens
         uses: qetza/replacetokens-action@v1
+        id: replace-tokens
         with:
           sources: ./publish/**/appsettings.json
           variables: '[${{ toJSON(secrets) }}]'
