@@ -1,9 +1,11 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using TollCents.Core.Entities;
 
-namespace TollCents.Core
+namespace TollCents.Core.Integrations.TEXpress.Utilities
 {
-    public static class PolylineEncoder_TEMP
+    public static class PolylineExtensions
     {
         /// <summary>
         /// Decode google style polyline coordinates.

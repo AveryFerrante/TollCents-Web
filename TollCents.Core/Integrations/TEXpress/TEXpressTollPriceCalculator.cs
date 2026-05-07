@@ -1,12 +1,11 @@
 ﻿using GoogleApi.Entities.Maps.Routes.Common;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Entities.Maps.Routes.Directions.Response.Enums;
+using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TollCents.Core.Entities;
@@ -20,7 +19,6 @@ namespace TollCents.Core.Integrations.TEXpress
     public interface ITEXpressTollPriceCalculator
     {
         Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag);
-        Task PrintPoints(Coordinate pointToMatch, string tollSegmentName, bool entryPoints = true);
     }
 
     public class TEXpressTollPriceCalculator : ITEXpressTollPriceCalculator
@@ -32,13 +30,13 @@ namespace TollCents.Core.Integrations.TEXpress
         private readonly IMemoryCache _memoryCache;
         private readonly ITEXpressSegmentSkipAnomolies _texpressSegmentSkipAnomoliesService;
         private readonly ILogger<TEXpressTollPriceCalculator> _logger;
-        private DebugLogProcessSummary _processSummary = new DebugLogProcessSummary();
-        private static readonly ActivitySource ActivitySource = new ActivitySource("b");
+        private readonly IMediator? _mediator;
 
         public TEXpressTollPriceCalculator(IOptions<TEXpressIntegrationConfiguration> configuration,
             IMemoryCache memoryCache,
             ITEXpressSegmentSkipAnomolies texpressSegmentSkipAnomoliesService,
-            ILogger<TEXpressTollPriceCalculator> logger)
+            ILogger<TEXpressTollPriceCalculator> logger,
+            IMediator? mediator = null)
         {
             ArgumentNullException.ThrowIfNull(configuration?.Value);
 
@@ -48,13 +46,12 @@ namespace TollCents.Core.Integrations.TEXpress
             _analysisModeEnabled = configuration.Value.AnalysisModeEnabled;
             _memoryCache = memoryCache;
             _texpressSegmentSkipAnomoliesService = texpressSegmentSkipAnomoliesService;
+            _mediator = mediator;
             _logger = logger;
         }
 
         public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
-            //using var activity = _analysisModeEnabled ? ActivitySource.StartActivity("AnalyzeTEXpressTollPrice") : null;
-
             var numberedTollSteps = routeSteps
                 .Select((step, index) => new NumberedTollRouteStep { Step = step, StepNumber = index })
                 .Where(a => IsTollStep(a.Step)).ToList();
@@ -86,52 +83,37 @@ namespace TollCents.Core.Integrations.TEXpress
             bool matchedAllSegments = true;
             double totalTollPrice = 0;
             List<Coordinate> skipWaypoints = new List<Coordinate>();
-            numberedTEXpressSteps.ForEach(currentNumberedStep =>
+            numberedTEXpressSteps.ForEach(async currentNumberedStep =>
             {
-                using var activity = ActivitySource.StartActivity("AnalyzeTEXpressTollPrice");
-                activity?.AddEvent(new ActivityEvent($"Analyzing TEXpress Step Number {currentNumberedStep.StepNumber}"));
-                _processSummary = new DebugLogProcessSummary();
                 _logger.LogInformation("Analyzing TEXpress Step Number {StepNumber} | Description \"{StepDescription}\"",
                     currentNumberedStep.StepNumber,
                     currentNumberedStep.Step.NavigationInstruction.Instructions.Replace("\n", " "));
+                await AnalyzeStepInitialInfo(currentNumberedStep);
 
-                var currentTEXpressStep = currentNumberedStep.Step;
                 var currentStepNumber = currentNumberedStep.StepNumber;
-                var cardinalDirections = currentTEXpressStep.StartLocation.ToCoordinate().GetCardinalDirections(currentTEXpressStep.EndLocation.ToCoordinate());
-                
-                activity?.AddTag("texpress.step.cardinalDirections", string.Join(", ", cardinalDirections));
-                activity?.AddTag("texpress.step.polyline", currentTEXpressStep.Polyline.EncodedPolyline);
-                activity?.AddTag("texpress.step.maneuver", currentTEXpressStep.NavigationInstruction.Maneuver.ToString());
-
-                _processSummary.StepCardinalDirection = string.Join(", ", cardinalDirections);
-                _processSummary.StepPolyline = currentTEXpressStep.Polyline.EncodedPolyline;
-                _processSummary.StepManeuver = currentTEXpressStep.NavigationInstruction.Maneuver.ToString();
+                var currentTEXpressStep = currentNumberedStep.Step;
+                var stepCardinalDirections = currentTEXpressStep.GetCardinalDirections();
 
                 if (IsTakeRampStep(numberedTollSteps, currentNumberedStep))
                 {
-                    _processSummary.SkippedDueToRampStep = true;
-                    LogProcessSummary(currentNumberedStep);
+                    await AnalyzeStepEvent("Skipped Step Due to Ramp Step Match");
                     return;
                 }
 
                 if (_texpressSegmentSkipAnomoliesService.ShouldSkipSegmentAnalysis(numberedTollSteps, currentStepNumber))
                 {
-                    _processSummary.SkippedDueToSegmentAnomoly = true;
-                    LogProcessSummary(currentNumberedStep);
+                    await AnalyzeStepEvent("Skipped Step Due to Segment Anomoly Match");
                     return;
                 }
 
-                _processSummary.StepDescription = currentNumberedStep.Step.NavigationInstruction.Instructions.Replace("\n", " ");
-                CheckIfMultiSegment(currentTEXpressStep, texpressSegments);
+                var segmentMatchSet = GetAllStepSegments(currentTEXpressStep, texpressSegments);
+                await AnalyzeStepEvent($"Matched Segments: {string.Join(", ", segmentMatchSet)}");
 
                 var timeChoices = GetOrderedTEXpressPriceLookupKeys(routeSteps, currentStepNumber);
 
-                var (startSegment, startEntryPoint) = GetStepStartSegment(texpressSegments
-                    .Where(s => s.ContainsCardinalDirection(cardinalDirections)), currentTEXpressStep.StartLocation);
-
-                // Debug analysis
-                var nearestStartSegment = texpressSegments.MinBy(segment => segment.EntryPoints.Min(entryPoint => entryPoint.Location.DistanceToInMiles(currentTEXpressStep.StartLocation.ToCoordinate())));
-                var nearestEntry = nearestStartSegment?.EntryPoints.MinBy(entryPoint => entryPoint.Location.DistanceToInMiles(currentTEXpressStep.StartLocation.ToCoordinate()));
+                var (startSegment, startEntryPoint) = GetStepStartSegment(texpressSegments.MatchesCardinalDirections(stepCardinalDirections),
+                    currentTEXpressStep.StartLocation);
+                await AnalyzeStepAccessEvent("Start", texpressSegments, currentNumberedStep, (startSegment, startEntryPoint));
 
                 if (startSegment is null)
                 {
@@ -139,23 +121,6 @@ namespace TollCents.Core.Integrations.TEXpress
                         currentNumberedStep.StepNumber,
                         currentTEXpressStep.NavigationInstruction.Instructions.Replace("\n", " "),
                         JsonSerializer.Serialize(currentTEXpressStep.StartLocation.LatLng));
-
-                    _processSummary.StartAccessInfo = new()
-                    {
-                        Matched = false,
-                        RouteCoordinateToMatch = currentTEXpressStep.StartLocation.ToCoordinate(),
-                        MatchedSegmentName = null,
-                        MatchedAccessPoint = null,
-                        MatchedDistanceToRouteCoordinate = null,
-                        SegmentPriceAdded = null,
-
-                        ActualClosestSegmentName = nearestStartSegment?.Description,
-                        ActualClosestAccessPoint = nearestEntry?.Description,
-                        ActualClosestCardinalDirection = string.Join(", ", nearestStartSegment?.CardinalDirections ?? []),
-                        ActualClosestCoordinate = nearestEntry?.Location,
-                        ActualClosestDistanceToRouteCoordinate = nearestEntry?.Location.DistanceToInMiles(currentTEXpressStep.StartLocation.ToCoordinate()),
-                    };
-
                     matchedAllSegments = false;
                 }
                 else
@@ -164,52 +129,24 @@ namespace TollCents.Core.Integrations.TEXpress
                     {
                         if (ep.SkipWaypoint is not null) skipWaypoints.Add((Coordinate)ep.SkipWaypoint);
                     });
-                    _logger.LogInformation("Matched start segment: {SegmentDescription} | {EntryPoint}", startSegment.Description, startEntryPoint?.Description);
+                    _logger.LogInformation("Matched start segment: {SegmentDescription} | {EntryPoint}", startSegment!.Description, startEntryPoint?.Description);
                     double price = GetTollSegmentPrice(timeChoices, startSegment);
                     _logger.LogInformation("Adding price {Price} for this step", price);
                     if (price > 0) totalTollPrice += price;
                     else matchedAllSegments = false;
-
-                    _processSummary.StartAccessInfo = new()
-                    {
-                        Matched = true,
-                        RouteCoordinateToMatch = currentTEXpressStep.StartLocation.ToCoordinate(),
-                        MatchedSegmentName = startSegment.Description,
-                        MatchedAccessPoint = startEntryPoint?.Description,
-                        MatchedDistanceToRouteCoordinate = startEntryPoint?.Location.DistanceToInMiles(currentTEXpressStep.StartLocation.ToCoordinate()),
-                        SegmentPriceAdded = price,
-
-                        ActualClosestSegmentName = nearestStartSegment?.Description,
-                        ActualClosestAccessPoint = nearestEntry?.Description,
-                        ActualClosestCardinalDirection = string.Join(", ", nearestStartSegment?.CardinalDirections ?? []),
-                        ActualClosestCoordinate = nearestEntry?.Location,
-                        ActualClosestDistanceToRouteCoordinate = nearestEntry?.Location.DistanceToInMiles(currentTEXpressStep.StartLocation.ToCoordinate()),
-                    };
                 }
 
                 if (EndsInSameSegment(currentTEXpressStep.EndLocation, startSegment))
                 {
                     _logger.LogInformation("Step ends in same segment as start segment, skipping end segment price check.");
-                    _processSummary.EndsInSameSegment = true;
-                    var exitPoint = startSegment?.ExitPoints.First(e => e.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()) <= _tollAccessPointMatchToleranceMiles);
-
-                    _processSummary.EndAccessInfo = new()
-                    {
-                        Matched = true,
-                        MatchedSegmentName = startSegment?.Description,
-                        MatchedAccessPoint = exitPoint?.Description,
-                        MatchedDistanceToRouteCoordinate = exitPoint?.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()),
-                        RouteCoordinateToMatch = currentTEXpressStep.EndLocation.ToCoordinate(),
-                    };
-                    LogProcessSummary(currentNumberedStep);
+                    await AnalyzeStepEvent("End segment matched start segment, skipping end segment price check.");
                     return;
                 }
 
-                var (endSegment, endExitPoint) = GetStepEndSegment(texpressSegments
-                    .Where(s => s.ContainsCardinalDirection(cardinalDirections)), currentTEXpressStep.EndLocation);
-                // Debug analysis
-                var nearestExitSegment = texpressSegments.MinBy(segment => segment.ExitPoints.Min(exitPoint => exitPoint.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate())));
-                var nearestExitPoint = nearestExitSegment?.ExitPoints.MinBy(exitPoint => exitPoint.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()));
+                var (endSegment, endExitPoint) = GetStepEndSegment(texpressSegments.MatchesCardinalDirections(stepCardinalDirections),
+                    currentTEXpressStep.EndLocation);
+                await AnalyzeStepAccessEvent("End", texpressSegments, currentNumberedStep, (endSegment, endExitPoint));
+
 
                 if (endSegment is null)
                 {
@@ -217,22 +154,6 @@ namespace TollCents.Core.Integrations.TEXpress
                         currentNumberedStep.StepNumber,
                         currentTEXpressStep.NavigationInstruction.Instructions,
                         JsonSerializer.Serialize(currentTEXpressStep.EndLocation.LatLng));
-
-                    _processSummary.EndAccessInfo = new()
-                    {
-                        Matched = false,
-                        RouteCoordinateToMatch = currentTEXpressStep.EndLocation.ToCoordinate(),
-                        MatchedSegmentName = null,
-                        MatchedAccessPoint = null,
-                        MatchedDistanceToRouteCoordinate = null,
-                        SegmentPriceAdded = null,
-
-                        ActualClosestSegmentName = nearestExitSegment?.Description,
-                        ActualClosestAccessPoint = nearestExitPoint?.Description,
-                        ActualClosestCardinalDirection = string.Join(", ", nearestExitSegment?.CardinalDirections ?? []),
-                        ActualClosestCoordinate = nearestExitPoint?.Location,
-                        ActualClosestDistanceToRouteCoordinate = nearestExitPoint?.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()),
-                    };
                     matchedAllSegments = false;
                 }
                 else
@@ -241,25 +162,7 @@ namespace TollCents.Core.Integrations.TEXpress
                     var price = GetTollSegmentPrice(timeChoices, endSegment);
                     if (price > 0) totalTollPrice += price;
                     else matchedAllSegments = false;
-
-                    _processSummary.EndAccessInfo = new()
-                    {
-                        Matched = true,
-                        RouteCoordinateToMatch = currentTEXpressStep.EndLocation.ToCoordinate(),
-                        MatchedSegmentName = endSegment.Description,
-                        MatchedAccessPoint = endExitPoint?.Description,
-                        MatchedDistanceToRouteCoordinate = endExitPoint?.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()),
-                        SegmentPriceAdded = price,
-
-                        ActualClosestSegmentName = nearestExitSegment?.Description,
-                        ActualClosestAccessPoint = nearestExitPoint?.Description,
-                        ActualClosestCardinalDirection = string.Join(", ", nearestExitSegment?.CardinalDirections ?? []),
-                        ActualClosestCoordinate = nearestExitPoint?.Location,
-                        ActualClosestDistanceToRouteCoordinate = nearestExitPoint?.Location.DistanceToInMiles(currentTEXpressStep.EndLocation.ToCoordinate()),
-                    };
                 }
-
-                LogProcessSummary(currentNumberedStep);
             });
 
             var tollResponse = new TEXpressTollPriceResult
@@ -277,58 +180,31 @@ namespace TollCents.Core.Integrations.TEXpress
             return tollResponse;
         }
 
-        private void LogProcessSummary(NumberedTollRouteStep currentNumberedStep)
+        /// <summary>
+        /// A single google maps step may span multiple TEXpress segments.
+        /// This attempts to resolve all associated TEXpress segments.
+        /// </summary>
+        private IEnumerable<string> GetAllStepSegments(RouteLegStep step, IEnumerable<TEXpressSegment> texpressSegments)
         {
-            _logger.LogDebug("\n\n\nProcess Summary for Step Number {StepNumber}:\n{ProcessSummary}",
-                                currentNumberedStep.StepNumber,
-                                JsonSerializer.Serialize(_processSummary, new JsonSerializerOptions
-                                {
-                                    WriteIndented = true,
-                                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                                }));
-        }
-
-        private void CheckIfMultiSegment(RouteLegStep step, IEnumerable<TEXpressSegment> texpressSegments)
-        {
+            // TODO: Should probably return IEnum<int> where int is a (not yet existing :)) identifier in TEXpressSegment.
             var polyline = step.Polyline.EncodedPolyline;
-            var coords = PolylineEncoder_TEMP.Decode(polyline).ToList();
+            var polylineCoords = PolylineExtensions.Decode(polyline).ToList();
             var dictionary = new Dictionary<string, int>();
+            var segmentMatchSet = new HashSet<string>();
 
-            var cardinalDirections = coords.First().GetCardinalDirections(coords.Last());
+            var cardinalDirections = polylineCoords.First().GetCardinalDirections(polylineCoords.Last());
 
-            texpressSegments.Where(s => s.ContainsCardinalDirection(cardinalDirections)).ToList().ForEach(segment =>
+            texpressSegments.MatchesCardinalDirections(cardinalDirections).ToList().ForEach(segment =>
             {
                 var entryPoints = segment.EntryPoints.Select(ep => ep.Location);
-                int matchCount = coords.Count(coord => entryPoints.Any(point => point.DistanceToInMiles(coord) <= _tollAccessPointMatchToleranceMiles));
-                if (matchCount > 0)
+                var match = polylineCoords.Any(coord => entryPoints.Any(point => point.DistanceToInMiles(coord) <= _tollAccessPointMatchToleranceMiles));
+                if (match)
                 {
-                    dictionary.Add(segment.Description ?? "UNKNOWN", matchCount);
+                    segmentMatchSet.Add(segment.Description ?? "UNKNOWN");
                 }
             });
 
-            if (dictionary.Count == 0)
-            {
-                _processSummary.MatchedSegmentsDescription = "No matching segments found for this step polyline.";
-            }
-            else
-            {
-                _processSummary.MatchedSegmentsDescription = $"Matched {dictionary.Count} segment(s): {string.Join(", ", dictionary.Keys)}";
-            }
-        }
-
-        public async Task PrintPoints(Coordinate pointToMatch, string tollSegmentName, bool entryPoints = true)
-        {
-            var tollSegments = await GetSegmentsAsync();
-            var segmentToAnalyze = tollSegments.First(s => string.Equals(s.Description, tollSegmentName, StringComparison.OrdinalIgnoreCase));
-
-            var accessPoints = entryPoints ? segmentToAnalyze.EntryPoints : segmentToAnalyze.ExitPoints;
-
-            foreach (var accessPoint in accessPoints)
-            {
-                var distance = accessPoint.Location.DistanceToInMiles(pointToMatch);
-                _logger.LogInformation($"Access Point: {accessPoint.Description} | LatLng: {accessPoint.Location.Latitude}, {accessPoint.Location.Longitude} | Distance to Match: {distance} miles");
-            }
+            return segmentMatchSet.ToList();
         }
 
         private async Task<IEnumerable<TEXpressSegment>> GetSegmentsAsync()
@@ -450,6 +326,57 @@ namespace TollCents.Core.Integrations.TEXpress
                 secondTimeChoice.ToPriceLookupChoice()
             };
         }
+
+        private async Task AnalyzeStepInitialInfo(NumberedTollRouteStep numberedStep)
+        {
+            await (_mediator?.Send(new StepInitialInfoEvent(
+                EventMessage: "Initial Step Information",
+                StepNumber: numberedStep.StepNumber,
+                StepInstruction: numberedStep.Step.NavigationInstruction?.Instructions,
+                Polyline: numberedStep.Step.Polyline?.EncodedPolyline,
+                CardinalDirections: numberedStep.Step.GetCardinalDirections(),
+                Maneuver: numberedStep.Step.NavigationInstruction?.Maneuver?.ToString()
+            )) ?? Task.CompletedTask);
+        }
+
+        private async Task AnalyzeStepEvent(string message)
+        {
+            await (_mediator?.Send(new StepEvent(
+                EventMessage: message
+            )) ?? Task.CompletedTask);
+        }
+
+        private async Task AnalyzeStepAccessEvent(string accessPointType,
+            IEnumerable<TEXpressSegment> texpressSegments,
+            NumberedTollRouteStep currentNumberedStep,
+            (TEXpressSegment? MatchedSegment, TollAccessPoint? MatchedAccessPoint) foundValue)
+        {
+            if (_mediator is null) return;
+
+            var stepLatLong = accessPointType == "Start" ? currentNumberedStep.Step.StartLocation.ToCoordinate() :
+                currentNumberedStep.Step.EndLocation.ToCoordinate();
+
+            var selector = (TEXpressSegment? segment) => accessPointType == "Start" ? segment?.EntryPoints : segment?.ExitPoints;
+
+            var actualClosestSegment = texpressSegments.MinBy(segment => selector(segment)
+                .Min(accessPoint => accessPoint.Location.DistanceToInMiles(stepLatLong)));
+            var actualClosestEntry = selector(actualClosestSegment).MinBy(entryPoint => entryPoint.Location.DistanceToInMiles(stepLatLong));
+
+
+            await _mediator.Send(new StepTollAccessEvent(
+                EventMessage: $"Step {accessPointType} Access Point Analysis",
+                AccessType: accessPointType,
+                StepLatLong: $"{stepLatLong.Latitude}, {stepLatLong.Longitude}",
+                MatchedSegment: foundValue.MatchedSegment?.Description,
+                MatchedAccessPoint: foundValue.MatchedAccessPoint?.Description,
+                MatchedDistance: foundValue.MatchedAccessPoint?.Location.DistanceToInMiles(stepLatLong),
+                ActualClosestSegment: actualClosestSegment?.Description,
+                ActualClosestAccessPoint: actualClosestEntry?.Description,
+                ActualClosestDistance: actualClosestEntry?.Location.DistanceToInMiles(stepLatLong),
+                ActualClosestCardinalDirections: actualClosestSegment?.CardinalDirections
+            ))!;
+
+        }
     }
 
     internal class TEXpressPriceLookupChoice
@@ -470,37 +397,5 @@ namespace TollCents.Core.Integrations.TEXpress
     {
         public int StepNumber { get; set; }
         public required RouteLegStep Step { get; set; }
-    }
-
-    public class DebugLogProcessSummary
-    {
-        public string? StepDescription { get; set; }
-        public string? StepPolyline { get; set; }
-        public string? StepManeuver { get; set; }
-        public string? StepCardinalDirection { get; set; }
-        public bool? SkippedDueToRampStep { get; set; } = false;
-
-        public bool? SkippedDueToSegmentAnomoly { get; set; } = false;
-        public string? MatchedSegmentsDescription { get; set; }
-        public DebugLogAccessPointSummary? StartAccessInfo { get; set; }
-        public bool? EndsInSameSegment { get; set; }
-        public DebugLogAccessPointSummary? EndAccessInfo { get; set; }
-    }
-
-    public class DebugLogAccessPointSummary
-    {
-        public bool? Matched { get; set; }
-        public Coordinate? RouteCoordinateToMatch { get; set; }
-        public string? RouteCoordinateToMatchFormatted => RouteCoordinateToMatch is not null ? $"{RouteCoordinateToMatch.Value.Latitude}, {RouteCoordinateToMatch.Value.Longitude}" : null;
-        public string? MatchedSegmentName { get; set; }
-        public string? MatchedAccessPoint { get; set; }
-        public double? MatchedDistanceToRouteCoordinate { get; set; }
-        public double? SegmentPriceAdded { get; set; }
-
-        public string? ActualClosestSegmentName { get; set; }
-        public string? ActualClosestAccessPoint { get; set; }
-        public string? ActualClosestCardinalDirection { get; set; }
-        public Coordinate? ActualClosestCoordinate { get; set; }
-        public double? ActualClosestDistanceToRouteCoordinate { get; set; }
     }
 }

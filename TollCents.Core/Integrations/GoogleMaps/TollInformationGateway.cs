@@ -1,5 +1,4 @@
 ﻿using GoogleApi.Entities.Common.Enums;
-using GoogleApi.Entities.Maps.Directions.Response;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using GoogleApi.Interfaces.Maps.Routes;
 using Microsoft.Extensions.Logging;
@@ -14,7 +13,9 @@ namespace TollCents.Core.Integrations.GoogleMaps
     public interface ITollInformationGateway
     {
         Task<RouteInformation?> GetRouteAvoidTollInformationAsync(ByAddressRequest addressRequest);
+
         Task<TollRouteInformation?> GetRouteTollInformationAsync(ByAddressRequest addressRequest);
+
         Task<TollRouteInformation?> GetRouteTollInformationTXAsync(ByAddressRequest addressRequest);
     }
 
@@ -85,19 +86,6 @@ namespace TollCents.Core.Integrations.GoogleMaps
             var texpressTolls = await _texpressTollPriceCalculator.GetTEXpressTollPrice(
                 routeLeg?.Steps ?? Enumerable.Empty<RouteLegStep>(),
                 hasTollPass);
-
-            //if (texpressTolls.SkipWaypoints.Any())
-            //{
-            //    _logger.LogInformation("\n\n\nSkip waypoint(s) detected. Analyzing route with skip waypoints");
-            //    var route2 = await GetRouteTollInformationTXAsync(new ByAddressRequest
-            //    {
-            //        StartAddress = "109 E Woodbury Drive, Garland TX",
-            //        EndAddress = "220 E Las Colinas Blvd, Irving TX",
-            //        IncludeTollPass = true,
-            //        ViaWaypoints = texpressTolls.SkipWaypoints
-
-            //    });
-            //}
 
             return new TollRouteInformation
             {

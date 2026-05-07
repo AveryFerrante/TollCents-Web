@@ -1,4 +1,5 @@
 ﻿using TollCents.Core.Entities;
+using TollCents.Core.Integrations.TEXpress.Utilities;
 
 namespace TollCents.Core.Integrations.TEXpress.Entities
 {

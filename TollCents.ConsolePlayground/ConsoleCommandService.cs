@@ -1,11 +1,10 @@
 ﻿using GoogleApi.Entities.Common.Converters.Factories;
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
 using TollCents.Core.Integrations.GoogleMaps;
+using TollCents.Core.Integrations.GoogleMaps.Requests;
 using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.ConsolePlayground
@@ -31,7 +30,8 @@ namespace TollCents.ConsolePlayground
         {
             "Load existing route data from file.",
             "Manually enter route addresses.",
-            "Coordinate lookup tool."
+            "Run Route Matrix",
+            "Exit",
         };
 
 
@@ -39,12 +39,22 @@ namespace TollCents.ConsolePlayground
         {
             while (true)
             {
+                _ioSystem.ClearScreen();
                 _ioSystem.WriteLine("Please select an option from below:");
                 var selectionIndex = GetUserSelectionIndex(_mainOptions);
+
+                if (selectionIndex == _mainOptions.Count() - 1) // Exit option
+                {
+                    _ioSystem.WriteLine("Exiting the application. Goodbye!");
+                    break;
+                }
+
                 var executor = _commandExecutors.FirstOrDefault(c =>
                     c.CommandExecutorDiscriminator == (CommandExecutorDiscriminator)selectionIndex);
                 ArgumentNullException.ThrowIfNull(executor, $"No command executor found for selection index {selectionIndex}");
                 await executor.ExecuteCommandAsync();
+                _ioSystem.WriteLine("Press any key to return to the main menu...");
+                var _ = _ioSystem.GetUserInput();
             }
         }
     }
@@ -84,25 +94,88 @@ namespace TollCents.ConsolePlayground
     {
         // Right now, needs to match index of the main options list in ConsoleCommandService.
         ExistingFileLoader = 0,
-    }
-
-    public class CommandStep
-    {
-        public required string CommandHeading { get; set; }
-
-        public IEnumerable<string>? StaticCommandOptions { get; set; }
-
-        public Func<IEnumerable<string>>? DynamicCommandOptionsGenerator { get; set; }
-
-        public Dictionary<int, Func<int, Task>>? ExecuteCommandStep { get; set; }
-
-        public CommandStep? NextCommand { get; set; }
+        ManualAddressEntry = 1,
+        RouteMatrixAnalysis = 2
     }
 
     public interface ICommandExecutor
     {
         CommandExecutorDiscriminator CommandExecutorDiscriminator { get; }
         Task ExecuteCommandAsync();
+    }
+
+    public class RouteMatrixAnalysisExecutor(IInputOutputSystem _ioSystem, ITollInformationGateway _tollInfoGateway,
+        IOptions<List<RouteAnalysisEntry>> matrixEntries)
+        : CommandReaderBase(_ioSystem), ICommandExecutor
+    {
+        CommandExecutorDiscriminator ICommandExecutor.CommandExecutorDiscriminator =>
+            CommandExecutorDiscriminator.RouteMatrixAnalysis;
+        public async Task ExecuteCommandAsync()
+        {
+            matrixEntries.Value.ForEach(entry =>
+            {
+                _ioSystem.WriteLine($"Start Address: {entry.Address1}, End Address: {entry.Address2}. " +
+                    $"Birdirectional {entry.Bidirectional}");
+            });
+            _ioSystem.WriteLine("Press any key to begin");
+            var _ = _ioSystem.GetUserInput();
+
+            foreach (var entry in matrixEntries.Value)
+            {
+                _ioSystem.WriteLine("\n\n\n");
+                _ioSystem.WriteLine("********************************************************");
+                _ioSystem.WriteLine("********************************************************");
+                _ioSystem.WriteLine("********************************************************");
+                _ioSystem.WriteLine($"Analyzing route from {entry.Address1} to {entry.Address2}");
+                var response = await _tollInfoGateway.GetRouteTollInformationTXAsync(new ByAddressRequest
+                {
+                    StartAddress = entry.Address1,
+                    EndAddress = entry.Address2,
+                    IncludeTollPass = true,
+                });
+                if (entry.Bidirectional)
+                {
+                    _ioSystem.WriteLine("********************************************************");
+                    _ioSystem.WriteLine("********************************************************");
+                    _ioSystem.WriteLine("********************************************************");
+                    _ioSystem.WriteLine($"Analyzing route from {entry.Address2} to {entry.Address1}");
+                    var response2 = await _tollInfoGateway.GetRouteTollInformationTXAsync(new ByAddressRequest
+                    {
+                        StartAddress = entry.Address2,
+                        EndAddress = entry.Address1,
+                        IncludeTollPass = true,
+                    });
+                }
+            }
+        }
+    }
+
+    public class ManualAddressEntryExecutor(IInputOutputSystem _ioSystem, ITollInformationGateway _tollInfoGateway)
+        : CommandReaderBase(_ioSystem), ICommandExecutor
+    {
+        CommandExecutorDiscriminator ICommandExecutor.CommandExecutorDiscriminator =>
+            CommandExecutorDiscriminator.ManualAddressEntry;
+        public async Task ExecuteCommandAsync()
+        {
+            _ioSystem.WriteLine("Please enter the start address:");
+            var startAddress = _ioSystem.GetUserInput();
+            _ioSystem.WriteLine("Please enter the end address:");
+            var endAddress = _ioSystem.GetUserInput();
+            if (string.IsNullOrWhiteSpace(startAddress) || string.IsNullOrWhiteSpace(endAddress))
+            {
+                _ioSystem.WriteLine("Start and end addresses cannot be empty. Please try again.");
+                return;
+            }
+            _ioSystem.WriteLine("Calculating toll information...");
+            var response = await _tollInfoGateway.GetRouteTollInformationTXAsync(new ByAddressRequest
+            {
+                StartAddress = startAddress,
+                EndAddress = endAddress,
+                IncludeTollPass = true
+            });
+            _ioSystem.WriteLine("Toll Information Response:");
+            _ioSystem.WriteLine(JsonSerializer.Serialize(response, new JsonSerializerOptions { WriteIndented = true }));
+        }
     }
 
     public class ExistingRouteFileLoader(IInputOutputSystem _ioSystem, ITEXpressTollPriceCalculator _texpressCalculator)
@@ -122,39 +195,6 @@ namespace TollCents.ConsolePlayground
 
         CommandExecutorDiscriminator ICommandExecutor.CommandExecutorDiscriminator =>
             CommandExecutorDiscriminator.ExistingFileLoader;
-
-        public IEnumerable<CommandStep> GetCommandSteps()
-        {
-            return new List<CommandStep>
-            {
-                new CommandStep
-                {
-                    CommandHeading = "Select a file to load the route data.",
-                    DynamicCommandOptionsGenerator = GetFileNames,
-                },
-                new CommandStep
-                {
-                    CommandHeading = "What would you like to do with the loaded route data?",
-                    StaticCommandOptions = new List<string>
-                    {
-                        "Print the route data to the console.",
-                        "Run TEXpress analysis for the route."
-                    }
-                }
-            };
-        }
-
-        private IEnumerable<string> GetFileNames()
-        {
-            var filePaths = Directory.GetFiles(_directoryPath, "*.json");
-            var fileNames = filePaths.Select(Path.GetFileName).ToList();
-            if (fileNames is null || !fileNames.Any() || fileNames.All(string.IsNullOrWhiteSpace))
-            {
-                throw new ArgumentException("No route files found in the specified directory.");
-            }
-            _filePaths = filePaths;
-            return fileNames;
-        }
 
         public async Task ExecuteCommandAsync()
         {
@@ -190,7 +230,7 @@ namespace TollCents.ConsolePlayground
                     break;
                 case 1:
                     _ioSystem.ClearScreen();
-                    _ioSystem.WriteLine("Calculating tolls for the route...");
+                    _ioSystem.WriteLine("Calculating TEXpress tolls for the route...");
                     var routeSteps = directionsData.Routes.First().Legs.First().Steps;
                     await _texpressCalculator.GetTEXpressTollPrice(routeSteps, hasTollTag: true);
                     break;

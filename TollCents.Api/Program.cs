@@ -2,8 +2,6 @@ using Serilog;
 using TollCents.Api.Startup;
 using TollCents.Api.Startup.Swagger;
 using TollCents.Core;
-using TollCents.Core.Integrations.GoogleMaps;
-using TollCents.Core.Integrations.TEXpress;
 
 namespace TollCents.Api
 {
@@ -20,12 +18,7 @@ namespace TollCents.Api
 
             // Add services to the container.
             builder.Services.ConfigureApplication(builder.Configuration);
-
-            var googleMapsConfigSection = $"Integrations:{GoogleMapsIntegrationConfiguration.SectionName}";
-            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration.GetSection(googleMapsConfigSection));
-
-            var texPressConfigSection = $"Integrations:{TEXpressIntegrationConfiguration.SectionName}";
-            builder.Services.RegisterTEXpressTollCalculatorIntegration(builder.Configuration.GetSection(texPressConfigSection));
+            builder.Services.RegisterGoogleMapsIntegration(builder.Configuration.GetSection("Integrations"));
 
             builder.Services.AddControllers();
             builder.Services.AddSwaggerDefinition();

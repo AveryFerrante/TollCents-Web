@@ -3,6 +3,7 @@
     public class TEXpressIntegrationConfiguration
     {
         public const string SectionName = "TEXpress";
+
         public string MetadataFilePath { get; init; } = string.Empty;
 
         public double TollAccessPointMatchToleranceMiles { get; init; } = 0.05;

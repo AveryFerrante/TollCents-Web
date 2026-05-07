@@ -1,6 +1,6 @@
 ﻿using TollCents.Core.Entities;
 
-namespace TollCents.Core
+namespace TollCents.Core.Integrations.TEXpress.Utilities
 {
     public enum CardinalDirection
     {
@@ -14,7 +14,7 @@ namespace TollCents.Core
         NorthWest = 8
     }
 
-    public static class Utilities___TEMP
+    public static class CardinalDirectionExtensions
     {
         public static double ToMiles(this double meters)
         {
@@ -55,32 +55,6 @@ namespace TollCents.Core
             ThrowIfBothNull(latBearing, longBearing);
 
             return new[] { latBearing, longBearing }.Where(b => b.HasValue).Select(b => b!.Value);
-
-            //switch (latBearing)
-            //{
-            //    case null:
-            //        return longBearing!.Value;
-            //    case CardinalDirection.North:
-            //        switch (longBearing)
-            //        {
-            //            case null:
-            //                return latBearing.Value;
-            //            case CardinalDirection.East:
-            //                return CardinalDirection.NorthEast;
-            //            default:
-            //                return CardinalDirection.NorthWest;
-            //        }
-            //    default:
-            //        switch (longBearing)
-            //        {
-            //            case null:
-            //                return latBearing.Value;
-            //            case CardinalDirection.East:
-            //                return CardinalDirection.SouthEast;
-            //            default:
-            //                return CardinalDirection.SouthWest;
-            //        }
-            //}
         }
 
         private static void ThrowIfBothNull(CardinalDirection? latBearing, CardinalDirection? longBearing)
