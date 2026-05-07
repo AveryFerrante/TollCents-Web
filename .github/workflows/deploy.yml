@@ -37,8 +37,8 @@ jobs:
       - name: Ensure deployment directory exists on server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ variables.SERVER_HOST }}
-          username: ${{ variables.SERVER_USERNAME }}
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USERNAME }}
           key: ${{ secrets.TOLLCENTS_SSH_KEY }}
           script: |
             mkdir -p "/var/www/tollcents/deploy/"
@@ -46,8 +46,8 @@ jobs:
       - name: Upload zip to server deploy directory
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ variables.SERVER_HOST }}
-          username: ${{ variables.SERVER_USERNAME }}
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USERNAME }}
           key: ${{ secrets.TOLLCENTS_SSH_KEY }}
           source: "release.tar.gz"
           target: "/var/www/tollcents/deploy/"
@@ -55,8 +55,8 @@ jobs:
       - name: Execute atomic deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ variables.SERVER_HOST }}
-          username: ${{ variables.SERVER_USERNAME }}
+          host: ${{ vars.SERVER_HOST }}
+          username: ${{ vars.SERVER_USERNAME }}
           key: ${{ secrets.TOLLCENTS_SSH_KEY }}
           script: |
             cd /var/www/tollcents/deploy/
