@@ -6,9 +6,9 @@ on:
         description: 'Reason for running'
         required: false
         default: 'Manual trigger'
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
