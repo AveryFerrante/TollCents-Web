@@ -5,26 +5,32 @@ namespace TollCents.Core.Integrations.TEXpress.Entities
 {
     public class TEXpressSegment
     {
-        public string? Description { get; set; }
-        public required IEnumerable<CardinalDirection> CardinalDirections { get; set; }
-        public IEnumerable<TollAccessPoint> EntryPoints { get; set; } = new List<TollAccessPoint>();
-        public IEnumerable<TollAccessPoint> ExitPoints { get; set; } = new List<TollAccessPoint>();
-        public Dictionary<string, IEnumerable<TimePrice>> TimeOfDayPricing { get; set; } = new Dictionary<string, IEnumerable<TimePrice>>();
+        public required string Description { get; init; }
+
+        public required int Identifier { get; init; }
+
+        public required IEnumerable<CardinalDirection> CardinalDirections { get; init; }
+
+        public IEnumerable<TollAccessPoint> EntryPoints { get; init; } = [];
+
+        public IEnumerable<TollAccessPoint> ExitPoints { get; init; } = [];
+
+        public Dictionary<string, IEnumerable<TimePrice>> TimeOfDayPricing { get; init; } = new();
     }
 
     public class TollAccessPoint
     {
-        public string? Description { get; set; }
+        public string? Description { get; init; }
 
-        public Coordinate Location { get; set; }
+        public Coordinate Location { get; init; }
 
-        public Coordinate? SkipWaypoint { get; set; }
+        public Coordinate? SkipWaypoint { get; init; }
     }
 
     public struct TimePrice
     {
-        public string Time { get; set; }
+        public string Time { get; init; }
 
-        public double Price { get; set; }
+        public double Price { get; init; }
     }
 }

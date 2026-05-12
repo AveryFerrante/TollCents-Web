@@ -34,6 +34,7 @@
     
     <!-- Treat warnings as errors in Release builds to ensure quality -->
     <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <NoWarn>CA2007;CA1812</NoWarn>
   </PropertyGroup>
 
   <!-- 

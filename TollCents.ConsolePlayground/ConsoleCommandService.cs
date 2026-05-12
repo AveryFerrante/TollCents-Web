@@ -2,6 +2,7 @@
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using TollCents.Core.Integrations.GoogleMaps;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
@@ -198,8 +199,12 @@ namespace TollCents.ConsolePlayground
 
         public async Task ExecuteCommandAsync()
         {
-            var filePaths = Directory.GetFiles(_directoryPath, "*.json");
-            var fileNames = filePaths.Select(Path.GetFileName).ToList();
+            string[] filePaths = Directory.GetFiles(_directoryPath, "*.json");
+            IEnumerable<string> fileNames = filePaths?
+                .Select(Path.GetFileName)
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .Select(x => x!) ?? [];
+
             if (fileNames is null || !fileNames.Any())
             {
                 _ioSystem.WriteLine($"No route files found in the specified directory: {_directoryPath}");
@@ -209,7 +214,7 @@ namespace TollCents.ConsolePlayground
             var selectionIndex = GetUserSelectionIndex(fileNames);
 
 
-            var fileData = await File.ReadAllTextAsync(filePaths[selectionIndex]);
+            var fileData = await File.ReadAllTextAsync(filePaths![selectionIndex]);
             RoutesDirectionsResponse directionsData = JsonSerializer.Deserialize<RoutesDirectionsResponse>(fileData, _jsonSerializerOptions)
                 ?? throw new InvalidOperationException("Failed to deserialize the route data from the selected file.");
 

@@ -18,7 +18,7 @@ namespace TollCents.Core.Integrations.TEXpress
 {
     public interface ITEXpressTollPriceCalculator
     {
-        Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag);
+        Task<TEXpressCalculationsResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag);
     }
 
     public class TEXpressTollPriceCalculator : ITEXpressTollPriceCalculator
@@ -50,17 +50,18 @@ namespace TollCents.Core.Integrations.TEXpress
             _logger = logger;
         }
 
-        public async Task<TEXpressTollPriceResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
+        public async Task<TEXpressCalculationsResult> GetTEXpressTollPrice(IEnumerable<RouteLegStep> routeSteps, bool hasTollTag)
         {
             var numberedTollSteps = routeSteps
+                .Where(IsTollStep)
                 .Select((step, index) => new NumberedTollRouteStep { Step = step, StepNumber = index })
-                .Where(a => IsTollStep(a.Step)).ToList();
+                .ToList();
 
             var numberedTEXpressSteps = numberedTollSteps.Where(a => IsTEXpressStep(a.Step)).ToList();
 
             if (!numberedTEXpressSteps.Any())
             {
-                return new TEXpressTollPriceResult
+                return new TEXpressCalculationsResult
                 {
                     TotalTollPrice = 0,
                     MatchedAllSegments = true,
@@ -71,7 +72,8 @@ namespace TollCents.Core.Integrations.TEXpress
             var texpressSegments = await GetSegmentsAsync();
             if (!texpressSegments.Any())
             {
-                return new TEXpressTollPriceResult
+                _logger.LogNoTEXpressSegments(_dataFilePath);
+                return new TEXpressCalculationsResult
                 {
                     TotalTollPrice = 0,
                     MatchedAllSegments = false,
@@ -82,7 +84,7 @@ namespace TollCents.Core.Integrations.TEXpress
             _logger.LogInformation("Beginning processesing on {FoundSteps} found TEXpress steps", numberedTEXpressSteps.Count);
             bool matchedAllSegments = true;
             double totalTollPrice = 0;
-            List<Coordinate> skipWaypoints = new List<Coordinate>();
+            var matchedSegmentsMetadata = new List<MatchedSegmentMetadata>();
             numberedTEXpressSteps.ForEach(async currentNumberedStep =>
             {
                 _logger.LogInformation("Analyzing TEXpress Step Number {StepNumber} | Description \"{StepDescription}\"",
@@ -106,6 +108,7 @@ namespace TollCents.Core.Integrations.TEXpress
                     return;
                 }
 
+                // This may be unnecessary? Just use found start and end segments?
                 var segmentMatchSet = GetAllStepSegments(currentTEXpressStep, texpressSegments);
                 await AnalyzeStepEvent($"Matched Segments: {string.Join(", ", segmentMatchSet)}");
 
@@ -125,14 +128,18 @@ namespace TollCents.Core.Integrations.TEXpress
                 }
                 else
                 {
-                    startSegment?.EntryPoints.ToList().ForEach(ep =>
-                    {
-                        if (ep.SkipWaypoint is not null) skipWaypoints.Add((Coordinate)ep.SkipWaypoint);
-                    });
                     _logger.LogInformation("Matched start segment: {SegmentDescription} | {EntryPoint}", startSegment!.Description, startEntryPoint?.Description);
                     double price = GetTollSegmentPrice(timeChoices, startSegment);
                     _logger.LogInformation("Adding price {Price} for this step", price);
-                    if (price > 0) totalTollPrice += price;
+                    if (price > 0)
+                    {
+                        totalTollPrice += price;
+                        var skipWaypoints = startSegment.EntryPoints
+                            .Where(ep => ep.SkipWaypoint is not null)
+                            .Select(ep => ep.SkipWaypoint!.Value);
+                        matchedSegmentsMetadata.Add(
+                            new(startSegment.Description, startSegment.Identifier, price, skipWaypoints));
+                    }
                     else matchedAllSegments = false;
                 }
 
@@ -160,17 +167,26 @@ namespace TollCents.Core.Integrations.TEXpress
                 {
                     _logger.LogInformation("Matched end segment: {SegmentDescription}", endSegment.Description);
                     var price = GetTollSegmentPrice(timeChoices, endSegment);
-                    if (price > 0) totalTollPrice += price;
+                    _logger.LogInformation("Adding price {Price} for this step", price);
+                    if (price > 0)
+                    {
+                        totalTollPrice += price;
+                        var skipWaypoints = endSegment.EntryPoints
+                            .Where(ep => ep.SkipWaypoint is not null)
+                            .Select(ep => ep.SkipWaypoint!.Value);
+                        matchedSegmentsMetadata.Add(
+                            new(endSegment.Description, endSegment.Identifier, price, skipWaypoints));
+                    }
                     else matchedAllSegments = false;
                 }
             });
 
-            var tollResponse = new TEXpressTollPriceResult
+            var tollResponse = new TEXpressCalculationsResult
             {
-                TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * (_noTollTagPriceMultiplier)),
+                TotalTollPrice = hasTollTag ? totalTollPrice : (totalTollPrice * _noTollTagPriceMultiplier),
                 MatchedAllSegments = matchedAllSegments,
                 HasTollSteps = true,
-                SkipWaypoints = skipWaypoints,
+                MatchedSegmentsMetadata = matchedSegmentsMetadata
             };
 
             _logger.LogInformation("Completed TEXpress toll price calculation. Total Price: {TotalPrice} | Matched All Segments: {MatchedAllSegments} | Has Toll Steps: {HasTollSteps}",
@@ -184,13 +200,10 @@ namespace TollCents.Core.Integrations.TEXpress
         /// A single google maps step may span multiple TEXpress segments.
         /// This attempts to resolve all associated TEXpress segments.
         /// </summary>
-        private IEnumerable<string> GetAllStepSegments(RouteLegStep step, IEnumerable<TEXpressSegment> texpressSegments)
+        private IEnumerable<int> GetAllStepSegments(RouteLegStep step, IEnumerable<TEXpressSegment> texpressSegments)
         {
-            // TODO: Should probably return IEnum<int> where int is a (not yet existing :)) identifier in TEXpressSegment.
-            var polyline = step.Polyline.EncodedPolyline;
-            var polylineCoords = PolylineExtensions.Decode(polyline).ToList();
-            var dictionary = new Dictionary<string, int>();
-            var segmentMatchSet = new HashSet<string>();
+            var polylineCoords = step.Polyline.EncodedPolyline.Decode();
+            var segmentMatchSet = new HashSet<int>();
 
             var cardinalDirections = polylineCoords.First().GetCardinalDirections(polylineCoords.Last());
 
@@ -200,11 +213,11 @@ namespace TollCents.Core.Integrations.TEXpress
                 var match = polylineCoords.Any(coord => entryPoints.Any(point => point.DistanceToInMiles(coord) <= _tollAccessPointMatchToleranceMiles));
                 if (match)
                 {
-                    segmentMatchSet.Add(segment.Description ?? "UNKNOWN");
+                    segmentMatchSet.Add(segment.Identifier);
                 }
             });
 
-            return segmentMatchSet.ToList();
+            return segmentMatchSet;
         }
 
         private async Task<IEnumerable<TEXpressSegment>> GetSegmentsAsync()
@@ -385,13 +398,23 @@ namespace TollCents.Core.Integrations.TEXpress
         public required string ChoiceDay { get; set; }
     }
 
-    public class TEXpressTollPriceResult
+    public class TEXpressCalculationsResult
     {
         public double TotalTollPrice { get; set; }
+
         public bool MatchedAllSegments { get; set; }
+
         public bool HasTollSteps { get; set; }
-        public List<Coordinate> SkipWaypoints { get; set; } = new();
+
+        public List<MatchedSegmentMetadata> MatchedSegmentsMetadata { get; set; } = new();
     }
+
+    public record MatchedSegmentMetadata(
+        string SegmentDescription,
+        int SegmentIdentifier,
+        double Price,
+        IEnumerable<Coordinate> SkipWaypoints
+    );
 
     public class NumberedTollRouteStep
     {

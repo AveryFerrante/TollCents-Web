@@ -22,39 +22,12 @@ namespace TollCents.Api
 
             builder.Services.AddControllers();
             builder.Services.AddSwaggerDefinition();
-            
+
+            // TODO: Update nginx routing for better SPA support (don't need specific /route type forwarding,
+            // just use the "/" route fallback to index.html everytime for client side routing).
             var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-                app.UseCors(ConfigurationConstants.DevCORSPolicyName);
-            }
-            else
-            {
-                app.UseCors(ConfigurationConstants.ProductionCORSPolicyName);
-            }
-
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseRateLimiter();
-            app.UseSerilogRequestLogging(options =>
-            {
-                options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
-                options.GetLevel = (httpContext, elapsed, ex) =>
-                {
-                    if (httpContext.Response.StatusCode >= 400)
-                        return Serilog.Events.LogEventLevel.Warning;
-                    return Serilog.Events.LogEventLevel.Information;
-                };
-            });
-
+            app.ConfigureOrderedRequestPipeline();
             app.MapControllers();
-
             app.Run();
         }
     }

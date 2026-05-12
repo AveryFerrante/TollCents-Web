@@ -59,7 +59,34 @@ namespace TollCents.Core.Integrations.GoogleMaps
             _logger.LogInformation("Processesing results for route from {StartAddress} to {EndAddress}",
                 addressRequest.StartAddress, addressRequest.EndAddress);
 
-            _logger.LogInformation("Route total time {TotalTime}", response?.Routes.First().Duration);
+            IEnumerable<RouteLegStep> routeLegSteps = response.Routes.FirstOrDefault()?.Legs.FirstOrDefault()?.Steps ?? [];
+            _logger.LogInformation("Route polyline: {Polyline}", response.Routes.First().Polyline.EncodedPolyline);
+            _logger.LogInformation("Route total time: {TotalTime}", response?.Routes.First().Duration);
+            var tollMetadata = await _texpressTollPriceCalculator
+                .GetTEXpressTollPrice(routeLegSteps, addressRequest.IncludeTollPass ?? false);
+
+            _logger.LogInformation("Matched {MatchedSegmentsCount} toll segments on the route", tollMetadata.MatchedSegmentsMetadata.Count());
+            foreach (var matchedSegment in tollMetadata.MatchedSegmentsMetadata)
+            {
+                if (matchedSegment.SkipWaypoints is null || !matchedSegment.SkipWaypoints.Any())
+                    continue;
+
+                _logger.LogInformation("Re-trying route skipping segment {SegmentDescription}", matchedSegment.SegmentDescription);
+                addressRequest.ViaWaypoints = matchedSegment.SkipWaypoints;
+                var req = RouteBaseRequest
+                    .GetRequest(addressRequest, _apiKey)
+                    .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
+                var resp = await _routesDirectionsApi.QueryAsync(req);
+                _logger.LogInformation("Route polyline: {Polyline}", resp.Routes.First().Polyline.EncodedPolyline);
+                _logger.LogInformation("Route total time: {TotalTime}", resp?.Routes.First().Duration);
+                _logger.LogInformation("Re-calculating tolls for new route");
+                var newInfo = await _texpressTollPriceCalculator.GetTEXpressTollPrice(
+                    resp?.Routes.FirstOrDefault()?.Legs.FirstOrDefault()?.Steps ?? Enumerable.Empty<RouteLegStep>(),
+                    addressRequest.IncludeTollPass ?? false);
+                _logger.LogInformation("Matched {MatchedSegmentsCount} toll segments on the new route", newInfo.MatchedSegmentsMetadata.Count());
+            }
+
+            _logger.LogInformation("DONE - Processesing final time as usual");
             return await MapToTollRouteInformation(response, addressRequest.IncludeTollPass ?? false);
         }
 

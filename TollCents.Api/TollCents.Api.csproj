@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <StartupObject>TollCents.Api.Program</StartupObject>
+	<NoWarn>$(NoWarn);CA1515</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

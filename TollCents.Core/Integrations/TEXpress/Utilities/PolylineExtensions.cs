@@ -12,7 +12,7 @@ namespace TollCents.Core.Integrations.TEXpress.Utilities
         /// </summary>
         /// <param name="encodedPoints"></param>
         /// <returns></returns>
-        public static IEnumerable<Coordinate> Decode(string encodedPoints)
+        public static IEnumerable<Coordinate> Decode(this string encodedPoints)
         {
             if (string.IsNullOrEmpty(encodedPoints))
                 throw new ArgumentNullException("encodedPoints");
@@ -71,7 +71,7 @@ namespace TollCents.Core.Integrations.TEXpress.Utilities
         /// </summary>
         /// <param name="points"></param>
         /// <returns></returns>
-        public static string Encode(IEnumerable<Coordinate> points)
+        public static string Encode(this IEnumerable<Coordinate> points)
         {
             var str = new StringBuilder();
 

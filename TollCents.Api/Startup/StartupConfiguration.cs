@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Serilog;
 using System.Threading.RateLimiting;
 using TollCents.Api.Authentication;
 using TollCents.Api.Models.Attributes;
@@ -7,6 +8,40 @@ namespace TollCents.Api.Startup
 {
     public static class StartupConfiguration
     {
+        public static WebApplication ConfigureOrderedRequestPipeline(this WebApplication app)
+        {
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+                app.UseCors(ConfigurationConstants.DevCORSPolicyName);
+            }
+            else
+            {
+                app.UseCors(ConfigurationConstants.ProductionCORSPolicyName);
+            }
+
+            // no need for app.UseHttpsRedirection() as the API will be behind a reverse proxy
+            // that handles TLS termination.
+            app.UseForwardedHeaders();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseRateLimiter();
+            app.UseSerilogRequestLogging(options =>
+            {
+                options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
+                options.GetLevel = (httpContext, elapsed, ex) =>
+                {
+                    if (httpContext.Response.StatusCode >= 400)
+                        return Serilog.Events.LogEventLevel.Warning;
+                    return Serilog.Events.LogEventLevel.Information;
+                };
+            });
+
+            return app;
+        }
+
         public static IServiceCollection ConfigureApplication(this IServiceCollection services, IConfiguration configuration)
         {
             var applicationConfiguration = configuration.Get<ApplicationConfiguration>();
