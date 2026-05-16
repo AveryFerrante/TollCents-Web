@@ -28,27 +28,23 @@ namespace TEXpressWebScraper
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            var segments = configuration
-                .GetSection("TEXpressSegments")
-                .Get<List<TEXpressSegmentWebScraper>>();
+            var applicationConfig = configuration.Get<ApplicationConfiguration>();
+            ArgumentNullException.ThrowIfNull(applicationConfig);
 
-            var filePath = configuration.GetValue<string>("OutputFilePath");
-            var useSelenium = configuration.GetValue<bool>("UseSelenium");
-
-            ArgumentNullException.ThrowIfNull(segments);
-            ArgumentNullException.ThrowIfNull(filePath);
-
-            if (useSelenium)
+            if (applicationConfig.UseSelenium)
             {
-                var outputSourceFiles = configuration.GetValue<bool>("OutputSourceHTMLFiles");
+                var outputSourceFiles = configuration.GetValue<bool?>("OutputSourceHTMLFiles");
                 var outputDirectory = configuration.GetValue<string>("SourceDataFilesDirectory");
-                UseSelenium(segments, filePath, outputSourceFiles, outputDirectory); 
+                ArgumentNullException.ThrowIfNull(outputSourceFiles);
+                ArgumentNullException.ThrowIfNull(outputDirectory);
+                UseSelenium(applicationConfig.TEXpressSegments, applicationConfig.OutputFilePath,
+                    applicationConfig.OutputSourceHTMLFiles, applicationConfig.SourceDataFilesDirectory); 
             }
             else
             {
                 var directoryPath = configuration.GetValue<string>("SourceDataFilesDirectory");
                 ArgumentNullException.ThrowIfNull(directoryPath);
-                segments.ForEach(segment =>
+                applicationConfig.TEXpressSegments.ToList().ForEach(segment =>
                 {
                     var fileName = SelectOptionToFileNameMap[segment.TEXpressCrawlerOptionsSelectValue];
                     var htmlData = File.ReadAllText(Path.Combine(directoryPath, fileName));
@@ -60,12 +56,13 @@ namespace TEXpressWebScraper
                     var timePrices = GetTimePriceDictionary(segment.Description ?? "", tableRows);
                     segment.TimeOfDayPricing = timePrices;
                 });
-                File.WriteAllText(filePath, JsonSerializer.Serialize(segments.Cast<TEXpressSegment>(), new JsonSerializerOptions { WriteIndented = true }));
+                File.WriteAllText(applicationConfig.OutputFilePath,
+                    JsonSerializer.Serialize(applicationConfig.TEXpressSegments.Cast<TEXpressSegment>(), new JsonSerializerOptions { WriteIndented = true }));
             }
         }
 
-        private static void UseSelenium(List<TEXpressSegmentWebScraper> segments, string filePath,
-            bool outputSourceFiles, string sourceFilesDirectory)
+        private static void UseSelenium(IEnumerable<TEXpressSegmentWebScraper> segments, string filePath,
+            bool outputSourceFiles, string? sourceFilesDirectory)
         {
             ChromeOptions options = new ChromeOptions();
             // options.AddArgument("--headless=new");
@@ -74,13 +71,14 @@ namespace TEXpressWebScraper
             using (IWebDriver driver = new ChromeDriver(options))
             {
                 Thread.Sleep(5000);
-                segments.ForEach(segment =>
+                segments.ToList().ForEach(segment =>
                 {
                     driver.Navigate().GoToUrl("https://www.texpresslanes.com/pricing/calculator/");
                     var result = RunSeleniumNew(driver, segment.TEXpressCrawlerOptionsSelectValue);
 
                     if (outputSourceFiles)
                     {
+                        ArgumentNullException.ThrowIfNull(sourceFilesDirectory);
                         var fileName = SelectOptionToFileNameMap[segment.TEXpressCrawlerOptionsSelectValue];
                         var filePathForSource = Path.Combine(sourceFilesDirectory, fileName);
                         File.WriteAllText(filePathForSource, result);
@@ -149,11 +147,6 @@ namespace TEXpressWebScraper
 
             var table = driver.FindElement(By.XPath("//table[@class='table table-timetable']"));
             var raw = table.GetAttribute("innerHTML");
-
-            //Thread.Sleep(2000);
-            //var getNewPriceButton = driver.FindElement(By.XPath("//button[text()='Get new average price']"));
-            //driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", getNewPriceButton);
-            //getNewPriceButton.Click();
 
             return raw ?? "";
         }

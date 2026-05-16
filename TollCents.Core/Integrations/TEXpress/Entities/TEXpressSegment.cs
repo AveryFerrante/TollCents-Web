@@ -11,11 +11,11 @@ namespace TollCents.Core.Integrations.TEXpress.Entities
 
         public required IEnumerable<CardinalDirection> CardinalDirections { get; init; }
 
-        public IEnumerable<TollAccessPoint> EntryPoints { get; init; } = [];
+        public IEnumerable<TollAccessEntryPoint> EntryPoints { get; init; } = [];
 
         public IEnumerable<TollAccessPoint> ExitPoints { get; init; } = [];
 
-        public Dictionary<string, IEnumerable<TimePrice>> TimeOfDayPricing { get; init; } = new();
+        public Dictionary<string, IEnumerable<TimePrice>> TimeOfDayPricing { get; set; } = new();
     }
 
     public class TollAccessPoint
@@ -24,7 +24,17 @@ namespace TollCents.Core.Integrations.TEXpress.Entities
 
         public Coordinate Location { get; init; }
 
+    }
+
+    public class TollAccessEntryPoint : TollAccessPoint
+    {
         public Coordinate? SkipWaypoint { get; init; }
+
+        /// <summary>
+        /// Based on the segment's cardinal direction(s), the order number indicates the 
+        /// sequence of this entry point relative to other entry points on the same segment. 
+        /// </summary>
+        public int? SequenceNumber { get; init; }
     }
 
     public struct TimePrice
