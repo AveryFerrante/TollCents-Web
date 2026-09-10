@@ -8,35 +8,35 @@ using TollCents.Core.Integrations.GoogleMaps.Requests;
 
 namespace TollCents.Core.Integrations.GoogleMaps.Utilities
 {
-    public interface IRouteBaseRequest
+    public interface IRouteRequestBuilder
     {
         RoutesDirectionsRequest IncludeTolls(IEnumerable<string>? tollPasses, VehicleEmissionType? vehicleEmissionType);
         RoutesDirectionsRequest AvoidTolls();
     }
 
-    public class RouteBaseRequest : IRouteBaseRequest
+    public class RouteRequestBuilder : IRouteRequestBuilder
     {
         private RoutesDirectionsRequest _request;
         private const string _fieldMaskCommon = "routes.duration,routes.distanceMeters,routes.description";
         private const string _fieldMaskTollInfo = "routes.travelAdvisory.tollInfo,routes.legs.steps";
         private const string _tempTestInfo = "routes.polyline";
-        private RouteBaseRequest(RoutesDirectionsRequest request)
+        private RouteRequestBuilder(RoutesDirectionsRequest request)
         {
             _request = request;
         }
-        public static IRouteBaseRequest GetRequest(ByAddressRequest addressRequest, string apiKey)
+        public static IRouteRequestBuilder GetRequest(RouteRequestBase routeRequest, string apiKey)
         {
             var request = new RoutesDirectionsRequest
             {
                 Key = apiKey,
-                Origin = new RouteWayPoint { Address = addressRequest.StartAddress },
-                Destination = new RouteWayPoint { Address = addressRequest.EndAddress },
-                Intermediates = addressRequest.ViaWaypoints?.Select(wp => new RouteWayPoint { Location = new RouteLocation { LatLng = new LatLng(wp.Latitude, wp.Longitude) }, Via = true }).ToList() ?? [],
+                Origin = routeRequest.GetRouteOrigin(),
+                Destination = routeRequest.GetRouteDestination(),
+                Intermediates = routeRequest.ViaWaypoints?.Select(wp => new RouteWayPoint { Location = new RouteLocation { LatLng = new LatLng(wp.Latitude, wp.Longitude) }, Via = true }).ToList() ?? [],
                 Region = "US",
                 Language = Language.English,
                 RoutingPreference = RoutingPreference.TrafficAwareOptimal,
             };
-            return new RouteBaseRequest(request);
+            return new RouteRequestBuilder(request);
         }
 
         public RoutesDirectionsRequest AvoidTolls()
@@ -45,7 +45,7 @@ namespace TollCents.Core.Integrations.GoogleMaps.Utilities
             {
                 AvoidTolls = true,
             };
-            _request.FieldMask = $"{_fieldMaskCommon}";
+            _request.FieldMask = $"{_fieldMaskCommon},{_tempTestInfo}";
             return _request;
         }
 

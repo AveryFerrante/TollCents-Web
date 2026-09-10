@@ -2,11 +2,13 @@
 using GoogleApi.Entities.Maps.Routes.Directions.Response;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
+using TollCents.ConsolePlayground.Services;
+using TollCents.Core.Entities;
 using TollCents.Core.Integrations.GoogleMaps;
 using TollCents.Core.Integrations.GoogleMaps.Requests;
 using TollCents.Core.Integrations.TEXpress;
+using TollCents.Core.Integrations.TEXpress.Utilities;
 
 namespace TollCents.ConsolePlayground
 {
@@ -32,6 +34,7 @@ namespace TollCents.ConsolePlayground
             "Load existing route data from file.",
             "Manually enter route addresses.",
             "Run Route Matrix",
+            "Custom Route Analysis",
             "Exit",
         };
 
@@ -96,13 +99,92 @@ namespace TollCents.ConsolePlayground
         // Right now, needs to match index of the main options list in ConsoleCommandService.
         ExistingFileLoader = 0,
         ManualAddressEntry = 1,
-        RouteMatrixAnalysis = 2
+        RouteMatrixAnalysis = 2,
+        CustomRouteAnalysis = 3
     }
 
     public interface ICommandExecutor
     {
         CommandExecutorDiscriminator CommandExecutorDiscriminator { get; }
         Task ExecuteCommandAsync();
+    }
+
+    public class CustomRouteAnalysisExecutor(IInputOutputSystem _ioSystem, ITollInformationGatewayExtended _tollInfoGateway, ILogger<CustomRouteAnalysisExecutor> _logger)
+        : CommandReaderBase(_ioSystem), ICommandExecutor
+    {
+        CommandExecutorDiscriminator ICommandExecutor.CommandExecutorDiscriminator =>
+            CommandExecutorDiscriminator.CustomRouteAnalysis;
+        public async Task ExecuteCommandAsync()
+        {
+            string address1 = "13312 Meandering Way, Dallas TX";
+            string address2 = "220 E Las Colinas Blvd, Irving TX";
+            ByAddressRequest request = new()
+            {
+                StartAddress = address1,
+                EndAddress = address2,
+                IncludeTollPass = true,
+            };
+
+            var rawResults = await _tollInfoGateway.GetTollRouteDataRawAsync(request);
+            var route = rawResults.Routes.Single();
+            var legs = route.Legs.Single();
+            var steps = legs.Steps;
+
+            var indexes = GetStepIndicesForTollSegment(steps);
+
+            ByCoordinatesRequest coordRequest = new()
+            {
+                Origin = new Coordinate
+                {
+                    Latitude = steps.ElementAt(indexes.start).StartLocation.LatLng.Latitude,
+                    Longitude = steps.ElementAt(indexes.start).StartLocation.LatLng.Longitude,
+                },
+                Destination = new Coordinate
+                {
+                    Latitude = steps.ElementAt(indexes.end).EndLocation.LatLng.Latitude,
+                    Longitude = steps.ElementAt(indexes.end).EndLocation.LatLng.Longitude,
+                },
+            };
+
+            var skippedTollSection = await _tollInfoGateway.GetNonTollRouteDataRawAsync(coordRequest);
+            var withTollSection = await _tollInfoGateway.GetTollRouteDataRawAsync(coordRequest);
+
+            _logger.LogDebug("Original route polyline {PloyLine}", route.Polyline.EncodedPolyline);
+            _logger.LogDebug("Using indexes {Indexes} to identify toll segment of the route", indexes);
+            _logger.LogDebug("Skipped toll section polyline {PloyLine}", skippedTollSection.Routes.Single().Polyline.EncodedPolyline);
+            _logger.LogDebug("Skipped toll section time in seconds {Duration}", skippedTollSection.Routes.Single().Duration);
+            _logger.LogDebug("With tolls section time in seconds {Duration}", withTollSection.Routes.Single().Duration);
+        }
+
+        private (int start, int end) GetStepIndicesForTollSegment(IEnumerable<RouteLegStep> steps)
+        {
+            int index = 0;
+            int? startIndex = null;
+            int? endIndex = null;
+            foreach (var step in steps)
+            {
+                var isTexpress = IsTEXpressStep(step);
+                if (startIndex is not null && !isTexpress)
+                {
+                    endIndex = index;
+                    break;
+                }
+
+                if (isTexpress)
+                {
+                    startIndex = index - 1;
+                }
+                index++;
+            }
+            
+            return (startIndex!.Value, endIndex!.Value);
+        }
+
+        private bool IsTEXpressStep(RouteLegStep step)
+        {
+            return step.NavigationInstruction.Instructions.Contains("TEXPRESS", StringComparison.OrdinalIgnoreCase);
+        }
+
     }
 
     public class RouteMatrixAnalysisExecutor(IInputOutputSystem _ioSystem, ITollInformationGateway _tollInfoGateway,

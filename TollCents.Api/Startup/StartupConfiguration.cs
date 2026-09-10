@@ -129,7 +129,7 @@ namespace TollCents.Api.Startup
         {
             // Auth middleware is registered before rate limiting, meaning this should
             // always exist, else the request would be rejected before reaching here.
-            return context.Request.Headers["X-Access-Code"].ToString()
+            return context.Request.Headers[ConfigurationConstants.ApiKeyHeaderName].ToString()
                 ?? throw new InvalidOperationException("No Access Header Code Found");
         }
     }

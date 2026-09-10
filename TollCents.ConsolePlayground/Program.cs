@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Serilog;
 using TollCents.ConsolePlayground;
+using TollCents.ConsolePlayground.Services;
 using TollCents.Core;
 
 ServiceProvider provider = CreateServiceProvider();
@@ -21,6 +22,7 @@ static ServiceProvider CreateServiceProvider()
     services.AddSingleton(configuration);
     services.Configure<List<RouteAnalysisEntry>>(configuration.GetSection("RouteAnalysisMatrix:Addresses"));
     services.RegisterGoogleMapsIntegration(configuration.GetSection("Integrations"));
+    services.AddSingleton<ITollInformationGatewayExtended, TollInformationGatewayExtended>();
     services.AddSerilog(loggerConfiguration => loggerConfiguration.ReadFrom.Configuration(configuration));
 
     // Command Orchestration
@@ -30,7 +32,8 @@ static ServiceProvider CreateServiceProvider()
     { 
         ServiceDescriptor.Singleton<ICommandExecutor, ExistingRouteFileLoader>(),
         ServiceDescriptor.Singleton<ICommandExecutor, ManualAddressEntryExecutor>(),
-        ServiceDescriptor.Singleton<ICommandExecutor, RouteMatrixAnalysisExecutor>()
+        ServiceDescriptor.Singleton<ICommandExecutor, RouteMatrixAnalysisExecutor>(),
+        ServiceDescriptor.Singleton<ICommandExecutor, CustomRouteAnalysisExecutor>()
     });
 
     return services.BuildServiceProvider();

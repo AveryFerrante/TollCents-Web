@@ -40,7 +40,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
         public async Task<TollRouteInformation?> GetRouteTollInformationAsync(ByAddressRequest addressRequest)
         {
-            var request = RouteBaseRequest
+            var request = RouteRequestBuilder
                 .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
 
@@ -51,7 +51,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
         public async Task<TollRouteInformation?> GetRouteTollInformationTXAsync(ByAddressRequest addressRequest)
         {
-            var request = RouteBaseRequest
+            var request = RouteRequestBuilder
                 .GetRequest(addressRequest, _apiKey)
                 .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
 
@@ -73,7 +73,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
                 _logger.LogInformation("Re-trying route skipping segment {SegmentDescription}", matchedSegment.SegmentDescription);
                 addressRequest.ViaWaypoints = matchedSegment.SkipWaypoints;
-                var req = RouteBaseRequest
+                var req = RouteRequestBuilder
                     .GetRequest(addressRequest, _apiKey)
                     .IncludeTolls(addressRequest.IncludeTollPass ?? false ? new List<string> { "US_TX_TOLLTAG" } : null, null);
                 var resp = await _routesDirectionsApi.QueryAsync(req);
@@ -92,7 +92,7 @@ namespace TollCents.Core.Integrations.GoogleMaps
 
         public async Task<RouteInformation?> GetRouteAvoidTollInformationAsync(ByAddressRequest addressRequest)
         {
-            var request = RouteBaseRequest
+            var request = RouteRequestBuilder
                 .GetRequest(addressRequest, _apiKey)
                 .AvoidTolls();
 
